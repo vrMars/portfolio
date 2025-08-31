@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neelaksh Bhatia | Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            animation: {
+              'gradient-xy': 'gradient-xy 15s ease infinite',
+              'gradient-xy-slow': 'gradient-xy 25s ease infinite',
+            },
+            keyframes: {
+              'gradient-xy': {
+                '0%, 100%': {
+                  'background-size': '400% 400%',
+                  'background-position': 'top center'
+                },
+                '50%': {
+                  'background-size': '200% 200%',
+                  'background-position': 'bottom center'
+                }
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #000; /* black */
+      }
+      .clip-wave-top {
+        clip-path: url(#waveTop);
+      }
+      .clip-wave-bottom {
+        clip-path: url(#waveBottom);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="text-gray-300">
+    <svg class="absolute w-0 h-0">
+      <defs>
+        <clipPath id="waveTop" clipPathUnits="objectBoundingBox">
+          <path d="M0,0.06 C0.15,0.14,0.3,0,0.5,0.06 C0.7,0.12,0.85,0,1,0.06 L1,1 L0,1 Z"></path>
+        </clipPath>
+        <clipPath id="waveBottom" clipPathUnits="objectBoundingBox">
+          <path d="M0,0 L1,0 L1,0.94 C0.85,1,0.7,0.88,0.5,0.94 C0.3,1,0.15,0.86,0,0.94 Z"></path>
+        </clipPath>
+      </defs>
+    </svg>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
