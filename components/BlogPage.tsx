@@ -54,11 +54,18 @@ export const BlogPage: React.FC<BlogPageProps> = ({ post }) => {
           </div>
         )}
 
-        <div className="space-y-6 text-lg leading-relaxed text-slate-200/85">
-          {post.content.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
+        {post.content.some((c) => /<[^>]+>/.test(c)) ? (
+          <div
+            className="prose prose-invert max-w-none text-slate-200/85 leading-relaxed [&_img]:rounded-2xl [&_img]:border [&_img]:border-white/10 [&_figure]:my-8 [&_figcaption]:mt-2 [&_figcaption]:text-sm [&_figcaption]:text-slate-300/70 [&_ul]:list-disc [&_ul]:pl-6 [&_li]:my-1"
+            dangerouslySetInnerHTML={{ __html: post.content.join('\n') }}
+          />
+        ) : (
+          <div className="space-y-6 text-lg leading-relaxed text-slate-200/85">
+            {post.content.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </div>
+        )}
 
         <footer className="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
           <Link to="/blog" className="inline-flex items-center text-sm font-medium text-sky-200 hover:text-white transition-colors">

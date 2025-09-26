@@ -5,7 +5,7 @@ export const PROJECTS: Project[] = [
     title: 'CamShare - Filetransfer using AR/ML',
     description: 'Adhoc alternative for proximity based filesharing using augmented reality and machine learning models. Uses Wi-Fi for fast transfers with a focus on privacy (Uses common P2P encryption protocols).',
     tags: ['Python', 'Swift'],
-    imageUrl: 'https://picsum.photos/seed/project1/600/400',
+    imageUrl: 'https://miro.medium.com/v2/resize:fit:1100/1*nxH_q3wGJuC6xpVovrg8iw.gif',
     liveUrl: 'https://vrmars.medium.com/a-better-way-to-share-photos-cfee4427e8b6',
 
   },
@@ -13,48 +13,17 @@ export const PROJECTS: Project[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
-    title: 'Scaling Microservices at YouTube',
-    description: 'A deep dive into the architectural patterns and challenges of scaling backend services for a global user base.',
-    publishDate: 'Oct 12, 2023',
-    source: 'Engineering Notebook',
-    slug: 'scaling-microservices-at-youtube',
-    readTime: '6 min read',
-    heroImage: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop',
-    tags: ['microservices', 'distributed-systems'],
+    title: 'A better way to share photos…',
+    description:
+      "Point your camera at a screen to share to it — embedded demo and visuals included.",
+    publishDate: 'Mar 14, 2021',
+    source: 'Medium',
+    slug: 'a-better-way-to-share-photos',
+    readTime: '2 min read',
+    heroImage: 'https://miro.medium.com/1*nxH_q3wGJuC6xpVovrg8iw.gif',
+    tags: ['AR', 'ML', 'filesharing'],
     content: [
-      'Keeping YouTube’s merchant catalog fast is less about heroic rewrites and more about taming thousands of services that evolved on different timelines. At this scale, the smallest regression in a dependency graph has the potential to cascade into real dollars. I outline how we map critical paths, measure them, and renegotiate SLAs when reality diverges from design.',
-      'The most impactful win came from leaning on request hedging and idempotent writes. We paired those with workload-aware autoscaling tuned around the Friday evening traffic spikes that often coincide with new drops. The takeaway: resilience is a product requirement, not a backend luxury.',
-      'Towards the end I cover the debugging toolkit we rely on—Envoy tap sessions, distributed traces, and boring but vital dashboards. There’s also a section on the guardrails we add before each launch so merchant onboarding stays smooth.'
-    ],
-  },
-  {
-    title: 'Mastering React Hooks: Beyond useState',
-    description: 'Exploring advanced React hooks like useReducer, useCallback, and custom hooks for cleaner, more performant code.',
-    publishDate: 'Jul 28, 2023',
-    source: 'Dev Notes',
-    slug: 'mastering-react-hooks',
-    readTime: '8 min read',
-    heroImage: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=2070&auto=format&fit=crop',
-    tags: ['react', 'hooks', 'frontend'],
-    content: [
-      'React hooks get interesting once you hit the limits of `useState`. I walk through patterns we use in production when reducers outgrow the switch anti-pattern, how to stabilise functions with `useCallback`, and why dependency arrays lie to you unless you pair them with ESLint.',
-      'Custom hooks are reusable only if they encode a point of view. I share my litmus tests for extracting one, plus the debugging steps when a hook misbehaves—spoiler: most issues trace back to stale closures or overzealous memoisation.',
-      'The post wraps with a fully typed data fetching hook that integrates SWR-style caching and suspense boundaries. Copy it into your next side project and bend it to your will.'
-    ],
-  },
-  {
-    title: 'The Art of Photography: Composition and Light',
-    description: 'My personal journey and tips on how to improve your photography by understanding core principles.',
-    publishDate: 'Apr 05, 2023',
-    source: 'Field Notes',
-    slug: 'art-of-photography',
-    readTime: '5 min read',
-    heroImage: 'https://images.unsplash.com/photo-1487412720507-6297e883e273?q=80&w=2070&auto=format&fit=crop',
-    tags: ['photography', 'storytelling'],
-    content: [
-      'Most of my favourite frames were captured in terrible light. Instead of packing it in, I learned to lean on leading lines and shadow play to guide the viewer’s eye. In the essay I share how those instincts formed while shooting the back alleys of Tokyo.',
-      'Great gear helps, but intent matters more. I unpack the questions I ask before pressing the shutter—what mood am I chasing, what part of the story am I compressing, and what can I afford to leave out?',
-      'Finally, I round up a handful of editing workflows I rely on to keep colours honest while still nudging a scene toward how it felt. Lightroom presets are starting points; the nuance happens in the curves.'
+      `<h2>A better way to share photos…</h2><figure><img src="https://miro.medium.com/v2/resize:fit:1100/1*e-pXtW1zDQFKE75cKZC7ow.png" alt="" loading="lazy" decoding="async"/><figcaption>cred. <a href="https://www.instagram.com/thebakinghobbyist/">@thebakinghobbyist</a></figcaption></figure><p>Picture this. You’ve just baked some awesome macarons and want to share your creation. After meticulously adjusting the lighting, you use your smartphone to take a great shot. Now all you need to do is touch it up in Photoshop and you’ll be ready to show it to the world.</p><p>You click the share button and now need to decide between the lesser of 3 evils:</p><figure><img src="https://miro.medium.com/v2/resize:fit:1100/1*3L7jBJZYzxFW68jbsMabYQ.png" alt="" loading="lazy" decoding="async"/></figure><h4>Bluetooth</h4><ul><li>Not every desktop supports this</li><li>Clunky to pair</li><li><strong>Slow</strong></li></ul><h4>Messenger</h4><ul><li>Facebook</li></ul><h4>Gmail</h4><ul><li>Uses up Google Drive storage</li><li>Cumbersome to deal with large files + multiple pictures</li></ul><p>There must be a better way…</p><figure><img src="https://miro.medium.com/v2/resize:fit:1100/1*nxH_q3wGJuC6xpVovrg8iw.gif" alt="" loading="lazy" decoding="async"/><figcaption>Ever since I was a kid, I’ve been fascinated by Iron Man’s tech. This scene in particular is the inspiration behind this project.</figcaption></figure><h3>Why can’t we just point our phones at a screen, and share data directly to (the PC behind) that screen?</h3><h2>Introducing CamShare!</h2><div class="relative w-full overflow-hidden rounded-2xl border border-white/10" style="padding-top:56.25%"><iframe class="absolute inset-0 h-full w-full" src="https://www.youtube.com/embed/rAzbdYmCuig" title="CamShare demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe></div><p>Share any file directly to <strong>CamShare</strong>, point your camera at the device you want to share to, and the file automatically ends up in your Downloads folder!</p><ul><li>Faster than Bluetooth (uses Wi-Fi)</li><li>Setup is completely within your LAN; meaning you control your data</li><li>Ephemeral storage</li><li>Platform agnostic (Android/iOS -&gt; Windows/Mac/Linux/…)</li></ul><figure><img src="https://miro.medium.com/v2/resize:fit:1100/1*-FtBtSOy1wsGdnRhUJY8Mw.gif" alt="" loading="lazy" decoding="async"/></figure>`,
     ],
   },
 ];
