@@ -67,8 +67,8 @@ export const Header: React.FC = () => {
         <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-red-600/10 via-black to-black animate-gradient-xy-slow"></div>
       </div>
       <div className="relative z-10 text-center px-4">
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tighter">
-          <span><span className="text-red-500">Neel</span>aksh</span><span className="ml-6 md:ml-8">Bhatia</span>
+        <h1 className="text-4xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tighter">
+          <span className="block md:inline"><span className="text-red-500">Neel</span>aksh</span><span className="block md:inline"> Bhatia</span>
         </h1>
         <p className="mt-4 text-xl md:text-2xl text-blue-400 font-medium">
           Software Engineer at YouTube
