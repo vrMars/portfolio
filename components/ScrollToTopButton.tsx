@@ -6,19 +6,24 @@ export const ScrollToTopButton: React.FC = () => {
 
   // Show button when page is scrolled down
   const toggleVisibility = () => {
-    if (window.pageYOffset > 300) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
+    const next = window.pageYOffset > 300;
+    setIsVisible((prev) => (prev !== next ? next : prev));
   };
 
   // Set up event listener for scrolling
   useEffect(() => {
-    window.addEventListener('scroll', toggleVisibility);
-
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        toggleVisibility();
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
-      window.removeEventListener('scroll', toggleVisibility);
+      window.removeEventListener('scroll', onScroll as EventListener);
     };
   }, []);
 
@@ -33,7 +38,7 @@ export const ScrollToTopButton: React.FC = () => {
     <button
       type="button"
       onClick={scrollToTop}
-      className={`fixed bottom-8 right-8 z-50 p-3 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-blue-500 transition-all duration-300 ${
+      className={`fixed bottom-8 right-8 z-50 glass-button p-3 rounded-full text-slate-100/80 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/60 transition-all duration-500 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
       }`}
       aria-label="Scroll to top"

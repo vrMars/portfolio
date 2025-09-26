@@ -1,20 +1,12 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { ActiveSectionContext } from '../App';
 import { GitHubIcon } from './icons/GitHubIcon';
 import { LinkedInIcon } from './icons/LinkedInIcon';
-import { MediumIcon } from './icons/MediumIcon';
+import { ResumeIcon } from './icons/ResumeIcon';
 
 export const Header: React.FC = () => {
-  const [offsetY, setOffsetY] = useState(0);
-  const handleScroll = () => setOffsetY(window.pageYOffset);
-
   const setActiveSection = useContext(ActiveSectionContext);
   const headerRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Observer for active section tracking
   useEffect(() => {
@@ -44,9 +36,9 @@ export const Header: React.FC = () => {
     };
   }, [setActiveSection]);
 
-  const handleScrollToAbout = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleScrollToProjects = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const targetElement = document.getElementById('about');
+    const targetElement = document.getElementById('projects');
     if (targetElement) {
       const navbarHeight = 80; // h-20 is 80px
       const offsetPosition = targetElement.offsetTop - navbarHeight;
@@ -58,36 +50,48 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <section ref={headerRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div 
-        className="absolute inset-0 bg-black"
-        style={{ transform: `translateY(${offsetY * 0.5}px)` }}
-      >
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/20 via-black to-black animate-gradient-xy"></div>
-        <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-red-600/10 via-black to-black animate-gradient-xy-slow"></div>
-      </div>
-      <div className="relative z-10 text-center px-4">
-        <h1 className="text-4xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tighter">
-          <span className="block md:inline"><span className="text-red-500">Neel</span>aksh</span><span className="block md:inline"> Bhatia</span>
-        </h1>
-        <p className="mt-4 text-xl md:text-2xl text-blue-400 font-medium">
-          Software Engineer at YouTube
-        </p>
-        <div className="mt-8 flex justify-center space-x-6">
-          <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
-            <GitHubIcon className="w-8 h-8" />
-          </a>
-          <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
-            <LinkedInIcon className="w-8 h-8" />
-          </a>
-          <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">
-            <MediumIcon className="w-8 h-8" />
-          </a>
+    <section id="header" ref={headerRef} className="relative min-h-[100svh] md:min-h-screen flex items-center justify-center overflow-hidden">
+      <div className="relative z-10 px-6 sm:px-8">
+        <div className="glass-panel rounded-[2.75rem] px-8 py-10 md:px-14 md:py-16 text-center max-w-4xl mx-auto">
+          <span className="inline-flex items-center gap-2 rounded-full glass-button px-4 py-2 text-xs uppercase tracking-[0.4em] text-slate-100/70 mb-6">
+            Software Engineer
+          </span>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white/90 tracking-tight leading-tight">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-emerald-200 to-rose-200">
+              Neelaksh Bhatia
+            </span>
+          </h1>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <a
+              href="https://github.com/vrMars"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-button rounded-full px-4 py-2 text-slate-100/80 hover:text-white transition-colors"
+            >
+              <GitHubIcon className="w-6 h-6" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/neelakshb/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-button rounded-full px-4 py-2 text-slate-100/80 hover:text-white transition-colors"
+            >
+              <LinkedInIcon className="w-6 h-6" />
+            </a>
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-button rounded-full px-4 py-2 text-slate-100/80 hover:text-white transition-colors"
+            >
+              <ResumeIcon className="w-6 h-6" />
+            </a>
+          </div>
         </div>
       </div>
-       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20">
-        <a href="#about" onClick={handleScrollToAbout} className="animate-bounce">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20">
+        <a href="#projects" onClick={handleScrollToProjects} className="glass-button rounded-full p-3 text-slate-100/70 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </a>

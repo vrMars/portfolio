@@ -8,11 +8,15 @@ export interface Project {
 }
 
 export interface BlogPost {
-  title:string;
+  title: string;
   description: string;
   publishDate: string;
-  url: string;
   source: string;
+  slug: string;
+  content: string[];
+  readTime?: string;
+  heroImage?: string;
+  tags?: string[];
 }
 
 export interface Experience {

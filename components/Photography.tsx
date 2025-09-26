@@ -16,16 +16,24 @@ export const Photography: React.FC = () => {
       id="photography"
       title="Photography"
       highlightedWordOverride="Photo"
-      className="bg-black/70 backdrop-blur-lg"
+      surfaceClassName="p-8 md:p-12"
     >
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
         {photos.map((photo, index) => (
-          <div key={index} className="overflow-hidden rounded-lg shadow-lg group">
-            <img 
-              src={photo} 
-              alt={`Photography sample ${index + 1}`} 
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          <div
+            key={index}
+            className="relative overflow-hidden rounded-3xl border border-white/12 bg-white/10 backdrop-blur-md group"
+          >
+            <img
+              src={photo}
+              alt={`Photography sample ${index + 1}`}
+              loading="lazy"
+              decoding="async"
+              fetchpriority="low"
+              className="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-110"
+              style={{ willChange: 'transform' }}
             />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </div>
         ))}
       </div>

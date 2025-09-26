@@ -9,31 +9,55 @@ interface ProjectCardProps {
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
-    <div className="group relative bg-gray-900/50 rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-blue-500/20 hover:-translate-y-2 border border-gray-800">
-      <img src={project.imageUrl} alt={project.title} className="w-full h-48 object-cover" />
-      <div className="p-6">
-        <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
-        <p className="text-gray-400 mb-4 text-sm leading-relaxed">{project.description}</p>
-        <div className="flex flex-wrap gap-2 mb-4">
+    <article className="group relative glass-panel rounded-3xl border border-white/10 overflow-hidden transition-transform duration-500 hover:-translate-y-2">
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={project.imageUrl}
+          alt={project.title}
+          loading="lazy"
+          decoding="async"
+          fetchpriority="low"
+          className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-110"
+          style={{ willChange: 'transform' }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="absolute top-4 right-4 flex space-x-3">
+          {project.githubUrl && (
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-button rounded-full p-2 text-slate-200/90 hover:text-white transition-colors"
+            >
+              <GitHubIcon className="h-5 w-5" />
+            </a>
+          )}
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-button rounded-full p-2 text-slate-200/90 hover:text-white transition-colors"
+            >
+              <ExternalLinkIcon className="h-5 w-5" />
+            </a>
+          )}
+        </div>
+      </div>
+      <div className="p-6 md:p-7 lg:p-8 space-y-4">
+        <h3 className="text-xl font-semibold text-white/90 tracking-tight">{project.title}</h3>
+        <p className="text-sm md:text-base leading-relaxed text-slate-200/80">{project.description}</p>
+        <div className="flex flex-wrap gap-2">
           {project.tags.map((tag) => (
-            <span key={tag} className="bg-blue-900/50 text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+            <span
+              key={tag}
+              className="glass-button text-xs uppercase tracking-wide text-slate-100/80 px-3 py-1 rounded-full"
+            >
               {tag}
             </span>
           ))}
         </div>
       </div>
-      <div className="absolute top-4 right-4 flex space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        {project.githubUrl && (
-          <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-400 transition-colors">
-            <GitHubIcon className="w-6 h-6" />
-          </a>
-        )}
-        {project.liveUrl && (
-          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-400 transition-colors">
-            <ExternalLinkIcon className="w-6 h-6" />
-          </a>
-        )}
-      </div>
-    </div>
+    </article>
   );
 };
