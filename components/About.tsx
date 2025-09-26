@@ -5,7 +5,7 @@ export const About: React.FC = () => {
   return (
     <Section 
       id="about"
-      title="About Me"
+      title="About Mee"
       className="-mt-24 pt-32 md:-mt-32 md:pt-40 bg-black/70 backdrop-blur-lg clip-wave-top"
     >
       <div className="max-w-3xl mx-auto text-lg text-gray-400 text-center leading-relaxed">
