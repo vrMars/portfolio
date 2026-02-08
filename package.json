@@ -11,6 +11,8 @@
     "deploy": "firebase deploy --only hosting"
   },
   "dependencies": {
+    "firebase": "^10.14.1",
+    "photoswipe": "^5.4.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.9.3"

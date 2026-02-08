@@ -58,18 +58,18 @@ export const Navbar: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled || location.pathname !== '/'
-          ? 'bg-white/10 backdrop-blur-2xl shadow-[0_12px_40px_rgba(6,10,22,0.35)]'
-          : 'bg-white/5 backdrop-blur-xl'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled || location.pathname !== '/'
+          ? 'shadow-[6px_6px_12px_#c8ccd4,-6px_-6px_12px_#ffffff]'
+          : ''
+        }`}
+      style={{ background: '#F0F2F5' }}
     >
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link
             to="/"
             onClick={(event) => handleNavigate(event, 'header')}
-            className="text-xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-emerald-200 to-rose-200 hover:from-sky-100 hover:via-emerald-100 hover:to-rose-100 transition-colors"
+            className="text-xl font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition-colors"
           >
             Neelaksh Bhatia
           </Link>
@@ -81,7 +81,7 @@ export const Navbar: React.FC = () => {
                   key={link.name}
                   to="/"
                   onClick={(event) => handleNavigate(event, targetId)}
-                  className="text-sm font-medium uppercase tracking-[0.3em] text-slate-200/70 hover:text-white transition-colors"
+                  className="text-sm font-medium uppercase tracking-[0.3em] text-gray-500 hover:text-indigo-500 transition-colors"
                 >
                   {link.name}
                 </Link>

@@ -11,6 +11,7 @@ import { MainLayout } from './components/MainLayout';
 import { Header } from './components/Header';
 import { Projects } from './components/Projects';
 import { Photography } from './components/Photography';
+import { PhotosPage } from './components/PhotosPage';
 import { Blog } from './components/Blog';
 import { Resume } from './components/Resume';
 
@@ -79,6 +80,7 @@ function App() {
               />
               <Route path="blog" element={<BlogHome posts={BLOG_POSTS} />} />
               <Route path="blog/:slug" element={<BlogPageWrapper />} />
+              <Route path="photos" element={<PhotosPage />} />
             </Route>
           </Routes>
         </main>

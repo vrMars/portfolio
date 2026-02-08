@@ -19,37 +19,37 @@ export const BlogHome: React.FC<BlogHomeProps> = ({ posts }) => {
     >
       <div className="max-w-4xl mx-auto space-y-12">
         <header className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-slate-200/60">
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-gray-400">
             <div className="flex items-center gap-2">
               <span>Browse</span>
-              <span className="text-slate-400">/</span>
-              <span className="text-slate-100/80">Blog</span>
+              <span className="text-gray-300">/</span>
+              <span className="text-gray-600">Blog</span>
             </div>
-            <Link to="/" className="inline-flex items-center font-medium text-sky-200 hover:text-white transition-colors">
+            <Link to="/" className="inline-flex items-center font-medium text-indigo-500 hover:text-purple-500 transition-colors">
               ← Back to portfolio
             </Link>
           </div>
-          <p className="text-xs uppercase tracking-[0.4em] text-slate-200/60">Latest posts</p>
+          <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Latest posts</p>
         </header>
         <ul className="space-y-8">
           {posts.map((post) => (
-            <li key={post.slug} className="group rounded-3xl border border-white/10 bg-[rgba(15,20,32,0.75)] px-6 py-8 backdrop-blur-lg transition-transform duration-500 hover:-translate-y-2">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-200/60">
+            <li key={post.slug} className="group glass-panel rounded-[30px] px-6 py-8 transition-transform duration-500 hover:-translate-y-2">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-400">
                 <span>{post.publishDate}</span>
                 {post.readTime && <span>• {post.readTime}</span>}
                 <span>• {post.source}</span>
               </div>
               <Link
                 to={`/blog/${post.slug}`}
-                className="mt-4 block text-2xl font-semibold text-white/90 transition-colors duration-300 group-hover:text-white"
+                className="mt-4 block text-2xl font-semibold text-gray-800 transition-colors duration-300 group-hover:text-indigo-500"
               >
                 {post.title}
               </Link>
-              <p className="mt-3 text-slate-200/80 leading-relaxed">{post.description}</p>
+              <p className="mt-3 text-gray-600 leading-relaxed">{post.description}</p>
               {post.tags && (
                 <ul className="mt-4 flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
-                    <li key={tag} className="glass-button text-xs uppercase tracking-wide text-slate-100/80 px-3 py-1 rounded-full">
+                    <li key={tag} className="glass-button text-xs uppercase tracking-wide text-gray-500 px-3 py-1 rounded-full">
                       {tag}
                     </li>
                   ))}
@@ -57,7 +57,7 @@ export const BlogHome: React.FC<BlogHomeProps> = ({ posts }) => {
               )}
               <Link
                 to={`/blog/${post.slug}`}
-                className="mt-6 inline-flex items-center text-sm font-medium text-sky-200 hover:text-white transition-colors"
+                className="mt-6 inline-flex items-center text-sm font-medium text-indigo-500 hover:text-purple-500 transition-colors"
               >
                 Read post →
               </Link>

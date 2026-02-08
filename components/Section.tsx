@@ -36,7 +36,7 @@ export const Section: React.FC<SectionProps> = ({
       }
       return;
     }
-    
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         // Set active section for background change
@@ -65,16 +65,15 @@ export const Section: React.FC<SectionProps> = ({
   }, [id, initiallyVisible, setActiveSection, targetSectionId]);
 
   const [firstWord, ...restOfTitleArray] = title.split(' ');
-  
+
   const highlightedText = highlightedWordOverride || firstWord;
   const remainingText = highlightedWordOverride
     ? title.substring(highlightedWordOverride.length)
     : ' ' + restOfTitleArray.join(' ');
 
   const surfaceClasses = withSurface
-    ? `glass-panel relative overflow-hidden p-8 md:p-12 lg:p-14 rounded-3xl border border-white/10 shadow-[0_25px_80px_rgba(8,11,24,0.45)] ${
-        surfaceClassName ?? ''
-      }`
+    ? `glass-panel relative overflow-hidden p-8 md:p-12 lg:p-14 rounded-[30px] ${surfaceClassName ?? ''
+    }`
     : surfaceClassName ?? '';
 
   return (
@@ -83,28 +82,24 @@ export const Section: React.FC<SectionProps> = ({
       ref={sectionRef}
       className={`relative py-24 lg:py-32 ${className}`}
     >
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-28 right-[-25%] h-64 w-64 rounded-full bg-gradient-to-br from-white/10 to-transparent blur-[110px]" />
-        <div className="absolute bottom-[-35%] left-[-15%] h-72 w-72 rounded-full bg-gradient-to-br from-white/8 to-transparent blur-[120px]" />
-      </div>
       <div className="container mx-auto px-6 lg:px-8">
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-12">
           <header className="lg:col-span-4">
             {/* Desktop-only sticky header. Always on the left. */}
-            <h2 className="hidden lg:block text-3xl font-semibold text-white/90 sticky top-28 z-20">
-              <span className="bg-gradient-to-r from-sky-200 via-blue-200 to-rose-200 bg-clip-text text-transparent">
+            <h2 className="hidden lg:block text-3xl font-semibold text-gray-800 sticky top-28 z-20">
+              <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 {highlightedText}
               </span>
-              <span className="text-slate-200/80">{remainingText}</span>
+              <span className="text-gray-600">{remainingText}</span>
             </h2>
           </header>
           <div className="lg:col-span-8">
             {/* Mobile-only in-flow header */}
-            <h2 className="text-4xl text-center mb-10 font-semibold text-white/90 lg:hidden">
-              <span className="bg-gradient-to-r from-sky-200 via-blue-200 to-rose-200 bg-clip-text text-transparent">
+            <h2 className="text-4xl text-center mb-10 font-semibold text-gray-800 lg:hidden">
+              <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 {highlightedText}
               </span>
-              <span className="text-slate-200/80">{remainingText}</span>
+              <span className="text-gray-600">{remainingText}</span>
             </h2>
             {withSurface ? (
               <div className={surfaceClasses}>{children}</div>

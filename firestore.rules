@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Photos collection - public read, writes only via Cloud Functions
+    match /photos/{photoId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

@@ -1,172 +1,301 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Neelaksh Bhatia | Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            animation: {
-              'gradient-xy': 'gradient-xy 15s ease infinite',
-              'gradient-xy-slow': 'gradient-xy 25s ease infinite',
-            },
-            keyframes: {
-              'gradient-xy': {
-                '0%, 100%': {
-                  'background-size': '400% 400%',
-                  'background-position': 'top center'
-                },
-                '50%': {
-                  'background-size': '200% 200%',
-                  'background-position': 'bottom center'
-                }
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neelaksh Bhatia | Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'gradient-xy': 'gradient-xy 15s ease infinite',
+            'gradient-xy-slow': 'gradient-xy 25s ease infinite',
+          },
+          keyframes: {
+            'gradient-xy': {
+              '0%, 100%': {
+                'background-size': '400% 400%',
+                'background-position': 'top center'
+              },
+              '50%': {
+                'background-size': '200% 200%',
+                'background-position': 'bottom center'
               }
             }
           }
         }
       }
-    </script>
-    <style>
-      :root {
-        color-scheme: dark;
-      }
+    }
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --neu-bg: #F0F2F5;
+      --neu-shadow-dark: #c8ccd4;
+      --neu-shadow-light: #ffffff;
+      --neu-text-primary: #2d3748;
+      --neu-text-secondary: #4a5568;
+      --neu-text-muted: #718096;
+      --neu-accent: #667eea;
+      --neu-accent-secondary: #764ba2;
+      --neu-radius: 50px;
+      --neu-radius-sm: 30px;
+      --neu-radius-lg: 60px;
+    }
 
-      body {
-        font-family: 'Inter', sans-serif;
-        background: radial-gradient(120% 120% at 10% 0%, rgba(89, 157, 255, 0.28) 0%, transparent 60%),
-          radial-gradient(110% 150% at 90% 10%, rgba(255, 134, 214, 0.22) 0%, transparent 65%),
-          linear-gradient(180deg, #05060f 0%, #060913 100%);
-        color: #dfe7ff;
-        min-height: 100vh;
-      }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--neu-bg);
+      color: var(--neu-text-primary);
+      min-height: 100vh;
+    }
 
-      .glass-panel {
-        position: relative;
-        overflow: hidden;
-        background:
-          radial-gradient(circle at 18% 12%, rgba(60, 80, 115, 0.25) 0%, rgba(60, 80, 115, 0) 58%),
-          linear-gradient(135deg, rgba(10, 16, 32, 0.82) 0%, rgba(14, 20, 36, 0.6) 100%);
-        border: 1px solid rgba(120, 150, 220, 0.16);
-        box-shadow: 0 28px 45px rgba(4, 6, 16, 0.45);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1),
-          box-shadow 600ms cubic-bezier(0.2, 0.8, 0.2, 1),
-          background 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
-      }
+    /* Neumorphic panel - extruded (raised) appearance */
+    .neu-panel {
+      position: relative;
+      background: var(--neu-bg);
+      border-radius: var(--neu-radius-sm);
+      box-shadow:
+        12px 12px 24px var(--neu-shadow-dark),
+        -12px -12px 24px var(--neu-shadow-light);
+      transition:
+        transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        box-shadow 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
 
-      .glass-button {
-        position: relative;
-        overflow: hidden;
-        background:
-          radial-gradient(circle at 22% 28%, rgba(92, 125, 170, 0.32) 0%, rgba(92, 125, 170, 0) 58%),
-          linear-gradient(165deg, rgba(12, 18, 30, 0.85) 0%, rgba(15, 22, 34, 0.6) 100%);
-        border: 1px solid rgba(130, 160, 225, 0.2);
-        box-shadow: 0 16px 28px rgba(5, 8, 18, 0.38);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.25rem;
-        transition: transform 450ms cubic-bezier(0.22, 0.68, 0, 1),
-          box-shadow 450ms cubic-bezier(0.22, 0.68, 0, 1),
-          background 450ms cubic-bezier(0.22, 0.68, 0, 1);
-      }
+    .neu-panel:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        16px 16px 32px var(--neu-shadow-dark),
+        -16px -16px 32px var(--neu-shadow-light);
+    }
 
-      .glass-panel::before,
-      .glass-button::before {
-        content: '';
-        position: absolute;
-        inset: -1px;
-        border-radius: inherit;
-        background: radial-gradient(
-          circle at 68% 22%,
-          rgba(160, 200, 255, 0.2),
-          rgba(160, 200, 255, 0)
-        );
-        mix-blend-mode: screen;
-        opacity: 0.06;
-        transform: translate3d(0, 0, 0);
-        transition: opacity 360ms ease;
-        pointer-events: none;
-      }
-      /* Reduce costly blur effects on mobile to avoid repaint jank */
-      @media (max-width: 768px) {
-        .glass-panel,
-        .glass-button {
-          backdrop-filter: none !important;
-          -webkit-backdrop-filter: none !important;
-          /* Slightly increase opacity to preserve legibility without blur */
-          background:
-            radial-gradient(circle at 18% 12%, rgba(60, 80, 115, 0.28) 0%, rgba(60, 80, 115, 0) 58%),
-            linear-gradient(135deg, rgba(10, 16, 32, 0.92) 0%, rgba(14, 20, 36, 0.72) 100%);
-        }
-      }
+    /* Neumorphic button - extruded (clickable) */
+    .neu-button {
+      position: relative;
+      background: var(--neu-bg);
+      border-radius: var(--neu-radius);
+      border: none;
+      box-shadow:
+        6px 6px 14px var(--neu-shadow-dark),
+        -6px -6px 14px var(--neu-shadow-light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--neu-text-secondary);
+      cursor: pointer;
+      transition:
+        transform 300ms cubic-bezier(0.22, 0.68, 0, 1),
+        box-shadow 300ms cubic-bezier(0.22, 0.68, 0, 1),
+        color 300ms ease;
+    }
 
-      .grain-overlay {
-        background-image: url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='0.5' cy='0.5' r='0.5' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E");
-        background-size: 160px 160px;
-        opacity: 0.15;
-      }
+    .neu-button:hover {
+      color: var(--neu-accent);
+      box-shadow:
+        8px 8px 18px var(--neu-shadow-dark),
+        -8px -8px 18px var(--neu-shadow-light);
+    }
 
+    .neu-button:active {
+      box-shadow:
+        inset 4px 4px 10px var(--neu-shadow-dark),
+        inset -4px -4px 10px var(--neu-shadow-light);
+    }
+
+    /* Neumorphic input - inset (pressed in) */
+    .neu-input {
+      background: var(--neu-bg);
+      border-radius: var(--neu-radius);
+      border: none;
+      box-shadow:
+        inset 6px 6px 12px var(--neu-shadow-dark),
+        inset -6px -6px 12px var(--neu-shadow-light);
+      color: var(--neu-text-primary);
+      outline: none;
+      transition:
+        box-shadow 300ms ease;
+    }
+
+    .neu-input:focus {
+      box-shadow:
+        inset 8px 8px 16px var(--neu-shadow-dark),
+        inset -8px -8px 16px var(--neu-shadow-light);
+    }
+
+    .neu-input::placeholder {
+      color: var(--neu-text-muted);
+    }
+
+    /* Neumorphic tag - small extruded element */
+    .neu-tag {
+      background: var(--neu-bg);
+      border-radius: var(--neu-radius);
+      box-shadow:
+        4px 4px 8px var(--neu-shadow-dark),
+        -4px -4px 8px var(--neu-shadow-light);
+      color: var(--neu-text-secondary);
+      display: inline-flex;
+      align-items: center;
+      transition: all 300ms ease;
+    }
+
+    .neu-tag:hover {
+      color: var(--neu-accent);
+    }
+
+    /* Neumorphic inset panel (for containers that should look pressed) */
+    .neu-inset {
+      background: var(--neu-bg);
+      border-radius: var(--neu-radius-sm);
+      box-shadow:
+        inset 8px 8px 16px var(--neu-shadow-dark),
+        inset -8px -8px 16px var(--neu-shadow-light);
+    }
+
+    /* Keep legacy class names for backward compatibility but map to new neumorphic styles */
+    .glass-panel {
+      position: relative;
+      background: var(--neu-bg);
+      border-radius: var(--neu-radius-sm);
+      border: none;
+      box-shadow:
+        12px 12px 24px var(--neu-shadow-dark),
+        -12px -12px 24px var(--neu-shadow-light);
+      transition:
+        transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        box-shadow 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .glass-panel:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        16px 16px 32px var(--neu-shadow-dark),
+        -16px -16px 32px var(--neu-shadow-light);
+    }
+
+    .glass-button {
+      position: relative;
+      background: var(--neu-bg);
+      border-radius: var(--neu-radius);
+      border: none;
+      box-shadow:
+        6px 6px 14px var(--neu-shadow-dark),
+        -6px -6px 14px var(--neu-shadow-light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--neu-text-secondary);
+      cursor: pointer;
+      transition:
+        transform 300ms cubic-bezier(0.22, 0.68, 0, 1),
+        box-shadow 300ms cubic-bezier(0.22, 0.68, 0, 1),
+        color 300ms ease;
+    }
+
+    .glass-button:hover {
+      color: var(--neu-accent);
+      box-shadow:
+        8px 8px 18px var(--neu-shadow-dark),
+        -8px -8px 18px var(--neu-shadow-light);
+    }
+
+    .glass-button:active {
+      box-shadow:
+        inset 4px 4px 10px var(--neu-shadow-dark),
+        inset -4px -4px 10px var(--neu-shadow-light);
+    }
+
+    /* Gradient text for neumorphic theme */
+    .neu-gradient-text {
+      background: linear-gradient(135deg, var(--neu-accent) 0%, var(--neu-accent-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Subtle pattern overlay for depth */
+    .grain-overlay {
+      background-image: url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='0.5' cy='0.5' r='0.5' fill='rgba(0,0,0,0.02)'/%3E%3C/svg%3E");
+      background-size: 160px 160px;
+      opacity: 0.4;
+    }
+
+    .lattice-overlay {
+      background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 0L61.7365 58.2635L120 60L61.7365 61.7365L60 120L58.2635 61.7365L0 60L58.2635 58.2635L60 0Z' fill='rgba(0,0,0,0.01)'/%3E%3C/svg%3E");
+      background-size: 120px 120px;
+      opacity: 0.3;
+    }
+
+    .clip-wave-top {
+      clip-path: url(#waveTop);
+    }
+
+    .clip-wave-bottom {
+      clip-path: url(#waveBottom);
+    }
+
+    /* Global reduced-effects mode */
+    .reduced-effects .animate-gradient-xy,
+    .reduced-effects .animate-gradient-xy-slow {
+      animation: none !important;
+    }
+
+    .reduced-effects .grain-overlay,
+    .reduced-effects .lattice-overlay {
+      display: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .grain-overlay,
       .lattice-overlay {
-        background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 0L61.7365 58.2635L120 60L61.7365 61.7365L60 120L58.2635 61.7365L0 60L58.2635 58.2635L60 0Z' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E");
-        background-size: 120px 120px;
-        opacity: 0.2;
+        display: none !important;
       }
+    }
 
-      .clip-wave-top {
-        clip-path: url(#waveTop);
-      }
-      .clip-wave-bottom {
-        clip-path: url(#waveBottom);
-      }
+    .reduced-effects .bg-mesh,
+    .reduced-effects .bg-waves,
+    .reduced-effects .bg-blobs {
+      display: none !important;
+    }
 
-      /* Global reduced-effects mode: disables costly animations/filters */
-      .reduced-effects .animate-gradient-xy,
-      .reduced-effects .animate-gradient-xy-slow {
-        animation: none !important;
-      }
-      .reduced-effects .grain-overlay,
-      .reduced-effects .lattice-overlay { display: none !important; }
-      @media (prefers-reduced-motion: reduce) {
-        .grain-overlay,
-        .lattice-overlay { display: none !important; }
-      }
-      .reduced-effects .bg-mesh,
-      .reduced-effects .bg-waves,
-      .reduced-effects .bg-blobs { display: none !important; }
-      .reduced-effects .glass-panel,
-      .reduced-effects .glass-button {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        box-shadow: 0 10px 28px rgba(5, 8, 18, 0.28) !important;
-      }
-      .reduced-effects * {
-        transition-duration: 200ms !important;
-      }
+    .reduced-effects .glass-panel,
+    .reduced-effects .glass-button,
+    .reduced-effects .neu-panel,
+    .reduced-effects .neu-button {
+      box-shadow:
+        6px 6px 12px var(--neu-shadow-dark),
+        -6px -6px 12px var(--neu-shadow-light) !important;
+    }
 
-      /* Reduce costly blur effects on mobile to avoid repaint jank */
-      @media (max-width: 768px) {
-        .glass-panel,
-        .glass-button {
-          backdrop-filter: none !important;
-          -webkit-backdrop-filter: none !important;
-          /* Slightly increase opacity to preserve legibility without blur */
-          background:
-            radial-gradient(circle at 18% 12%, rgba(60, 80, 115, 0.28) 0%, rgba(60, 80, 115, 0) 58%),
-            linear-gradient(135deg, rgba(10, 16, 32, 0.92) 0%, rgba(14, 20, 36, 0.72) 100%);
-        }
+    .reduced-effects * {
+      transition-duration: 200ms !important;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+
+      .glass-panel,
+      .glass-button,
+      .neu-panel,
+      .neu-button {
+        box-shadow:
+          8px 8px 16px var(--neu-shadow-dark),
+          -8px -8px 16px var(--neu-shadow-light);
       }
-    </style>
-<script type="importmap">
+    }
+  </style>
+  <script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.1.1",
@@ -178,18 +307,20 @@
 }
 </script>
 </head>
-  <body class="text-gray-300">
-    <svg class="absolute w-0 h-0">
-      <defs>
-        <clipPath id="waveTop" clipPathUnits="objectBoundingBox">
-          <path d="M0,0.06 C0.15,0.14,0.3,0,0.5,0.06 C0.7,0.12,0.85,0,1,0.06 L1,1 L0,1 Z"></path>
-        </clipPath>
-        <clipPath id="waveBottom" clipPathUnits="objectBoundingBox">
-          <path d="M0,0 L1,0 L1,0.94 C0.85,1,0.7,0.88,0.5,0.94 C0.3,1,0.15,0.86,0,0.94 Z"></path>
-        </clipPath>
-      </defs>
-    </svg>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+
+<body class="text-gray-700">
+  <svg class="absolute w-0 h-0">
+    <defs>
+      <clipPath id="waveTop" clipPathUnits="objectBoundingBox">
+        <path d="M0,0.06 C0.15,0.14,0.3,0,0.5,0.06 C0.7,0.12,0.85,0,1,0.06 L1,1 L0,1 Z"></path>
+      </clipPath>
+      <clipPath id="waveBottom" clipPathUnits="objectBoundingBox">
+        <path d="M0,0 L1,0 L1,0.94 C0.85,1,0.7,0.88,0.5,0.94 C0.3,1,0.15,0.86,0,0.94 Z"></path>
+      </clipPath>
+    </defs>
+  </svg>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>

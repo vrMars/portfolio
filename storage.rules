@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Photos directory - public read, writes only via Cloud Functions
+    match /photos/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

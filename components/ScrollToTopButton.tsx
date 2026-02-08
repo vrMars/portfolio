@@ -38,9 +38,8 @@ export const ScrollToTopButton: React.FC = () => {
     <button
       type="button"
       onClick={scrollToTop}
-      className={`fixed bottom-8 right-8 z-50 glass-button p-3 rounded-full text-slate-100/80 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/60 transition-all duration-500 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-      }`}
+      className={`fixed bottom-8 right-8 z-50 glass-button p-3 rounded-full text-gray-500 hover:text-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+        }`}
       aria-label="Scroll to top"
       aria-hidden={!isVisible}
       tabIndex={isVisible ? 0 : -1}

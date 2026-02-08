@@ -16,7 +16,7 @@ export const Blog: React.FC = () => {
     >
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <span className="text-sm uppercase tracking-[0.3em] text-slate-200/60">Recent writing</span>
-        <Link to="/blog" className="glass-button rounded-full px-5 py-2 text-sm font-medium text-white/80 hover:text-white">
+        <Link to="/blog" className="glass-button rounded-full px-5 py-2 text-sm font-medium text-gray-600 hover:text-indigo-500 transition-colors">
           View all posts
         </Link>
       </div>
