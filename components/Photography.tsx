@@ -94,7 +94,7 @@ export const Photography: React.FC = () => {
       id="photography"
       title="Photography"
       highlightedWordOverride="Photo"
-      surfaceClassName="p-8 md:p-12"
+      withSurface={false}
     >
       {loading && (
         <div className="flex justify-center items-center py-12">

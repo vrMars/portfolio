@@ -1,14 +1,6 @@
 import { Project, BlogPost, Experience } from './types';
 
 export const PROJECTS: Project[] = [
-  {
-    title: 'CamShare - Filetransfer using AR/ML',
-    description: 'Adhoc alternative for proximity based filesharing using augmented reality and machine learning models. Uses Wi-Fi for fast transfers with a focus on privacy (Uses common P2P encryption protocols).',
-    tags: ['Python', 'Swift'],
-    imageUrl: 'https://miro.medium.com/v2/resize:fit:1100/1*nxH_q3wGJuC6xpVovrg8iw.gif',
-    liveUrl: 'https://vrmars.medium.com/a-better-way-to-share-photos-cfee4427e8b6',
-
-  },
 ];
 
 export const BLOG_POSTS: BlogPost[] = [
@@ -67,9 +59,7 @@ export const EXPERIENCES: Experience[] = [
 ];
 
 export const NAV_LINKS = [
-
-  { name: 'Projects', href: '#projects' },
-  { name: 'Photography', href: '#photography' },
   { name: 'Blog', href: '#blog' },
+  { name: 'Photography', href: '#photography' },
   { name: 'Resume', href: '#resume' },
 ];

@@ -58,11 +58,11 @@ const GalleryItem = memo<GalleryItemProps>(({ photo, index, displayMode }) => {
       data-pswp-width={photo.width}
       data-pswp-height={photo.height}
       data-index={index}
-      className={`gallery-item block overflow-hidden rounded-[20px] glass-panel group cursor-pointer ${displayClasses}`}
+      className={`gallery-item block overflow-hidden rounded-[12px] md:rounded-[20px] glass-panel group cursor-pointer ${displayClasses}`}
       style={{ padding: displayMode === 'white-border' ? undefined : 0 }}
       aria-label={photo.alt || `View photo ${index + 1}`}
     >
-      <div className="relative overflow-hidden rounded-[16px]">
+      <div className="relative overflow-hidden rounded-[10px] md:rounded-[16px]">
         <img
           src={photo.thumb}
           alt={photo.alt || `Photo ${index + 1}`}
@@ -109,7 +109,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   // Distribute photos into columns for masonry layout
   const columns = useMemo(() => {
-    const numCols = isMobile ? 1 : 3;
+    const numCols = isMobile ? 2 : 3;
     const cols: Photo[][] = Array.from({ length: numCols }, () => []);
     const colHeights: number[] = Array(numCols).fill(0);
 
@@ -353,33 +353,20 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       <div
         ref={galleryRef}
         id={galleryId}
-        className={isMobile ? "flex flex-col gap-4" : "grid grid-cols-3 gap-6"}
+        className={isMobile ? "grid grid-cols-2 gap-3" : "grid grid-cols-3 gap-6"}
       >
-        {isMobile ? (
-          // Mobile: 1-column
-          photos.map((photo, index) => (
-            <GalleryItem
-              key={photo.id}
-              photo={photo}
-              index={index}
-              displayMode={photo.displayMode ?? defaultDisplayMode}
-            />
-          ))
-        ) : (
-          // Desktop: 3-column masonry
-          columns.map((column, colIndex) => (
-            <div key={colIndex} className="flex flex-col gap-6">
-              {column.map((photo) => (
-                <GalleryItem
-                  key={photo.id}
-                  photo={photo}
-                  index={getPhotoIndex(photo)}
-                  displayMode={photo.displayMode ?? defaultDisplayMode}
-                />
-              ))}
-            </div>
-          ))
-        )}
+        {columns.map((column, colIndex) => (
+          <div key={colIndex} className={isMobile ? "flex flex-col gap-3" : "flex flex-col gap-6"}>
+            {column.map((photo) => (
+              <GalleryItem
+                key={photo.id}
+                photo={photo}
+                index={getPhotoIndex(photo)}
+                displayMode={photo.displayMode ?? defaultDisplayMode}
+              />
+            ))}
+          </div>
+        ))}
       </div>
     </>
   );

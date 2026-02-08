@@ -9,8 +9,8 @@ interface ProjectCardProps {
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
-    <article className="group relative glass-panel rounded-[30px] overflow-hidden transition-transform duration-500 hover:-translate-y-2">
-      <div className="relative h-48 overflow-hidden rounded-t-[30px]">
+    <article className="group relative glass-panel rounded-[20px] md:rounded-[30px] overflow-hidden transition-transform duration-500 hover:-translate-y-2">
+      <div className="relative h-36 md:h-48 overflow-hidden rounded-t-[20px] md:rounded-t-[30px]">
         <img
           src={project.imageUrl}
           alt={project.title}
@@ -44,8 +44,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           )}
         </div>
       </div>
-      <div className="p-6 md:p-7 lg:p-8 space-y-4">
-        <h3 className="text-xl font-semibold text-gray-800 tracking-tight">{project.title}</h3>
+      <div className="p-4 md:p-7 lg:p-8 space-y-3 md:space-y-4">
+        <h3 className="text-base md:text-xl font-semibold text-gray-800 tracking-tight">{project.title}</h3>
         <p className="text-sm md:text-base leading-relaxed text-gray-600">{project.description}</p>
         <div className="flex flex-wrap gap-2">
           {project.tags.map((tag) => (

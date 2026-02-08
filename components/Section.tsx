@@ -80,7 +80,7 @@ export const Section: React.FC<SectionProps> = ({
     <section
       id={id}
       ref={sectionRef}
-      className={`relative py-24 lg:py-32 ${className}`}
+      className={`relative py-14 md:py-24 lg:py-32 ${className}`}
     >
       <div className="container mx-auto px-6 lg:px-8">
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-12">
@@ -95,7 +95,7 @@ export const Section: React.FC<SectionProps> = ({
           </header>
           <div className="lg:col-span-8">
             {/* Mobile-only in-flow header */}
-            <h2 className="text-4xl text-center mb-10 font-semibold text-gray-800 lg:hidden">
+            <h2 className="text-2xl md:text-4xl text-center mb-6 md:mb-10 font-semibold text-gray-800 lg:hidden">
               <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 {highlightedText}
               </span>

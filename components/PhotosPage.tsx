@@ -56,6 +56,17 @@ function groupPhotosByMonth(photos: PhotoWithTimestamp[]): PhotoGroup[] {
   }));
 }
 
+function distributeToColumns(photos: PhotoWithTimestamp[], numCols: number): PhotoWithTimestamp[][] {
+  const cols: PhotoWithTimestamp[][] = Array.from({ length: numCols }, () => []);
+  const colHeights: number[] = Array(numCols).fill(0);
+  photos.forEach((photo) => {
+    const shortest = colHeights.indexOf(Math.min(...colHeights));
+    cols[shortest].push(photo);
+    colHeights[shortest] += photo.height / photo.width;
+  });
+  return cols;
+}
+
 export const PhotosPage: React.FC = () => {
   const { photos, loading, error } = usePhotos();
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -211,97 +222,162 @@ export const PhotosPage: React.FC = () => {
             padding: 3px 6px;
           }
         }
+        .justified-gallery {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+        .justified-gallery::after {
+          content: '';
+          flex-grow: 999999999;
+        }
+        .justified-gallery-item {
+          height: 220px;
+          overflow: hidden;
+          border-radius: 16px;
+          cursor: pointer;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .justified-gallery-item:hover {
+          transform: translateY(-4px);
+        }
+        .justified-gallery-item img {
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+        .justified-gallery-item:hover img {
+          transform: scale(1.01);
+        }
+        @media (max-width: 640px) {
+          .justified-gallery {
+            display: none;
+          }
+        }
+        .masonry-mobile {
+          display: none;
+        }
+        @media (max-width: 640px) {
+          .masonry-mobile {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+          }
+          .masonry-mobile-col {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+          }
+          .masonry-mobile-item {
+            overflow: hidden;
+            border-radius: 10px;
+            cursor: pointer;
+          }
+          .masonry-mobile-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+          }
+          .masonry-mobile-item:active img {
+            transform: scale(1.01);
+          }
+        }
       `}</style>
 
-      <div className="container mx-auto px-6 lg:px-8">
-        <div className="lg:grid lg:grid-cols-12 lg:gap-x-12">
-          {/* Desktop sticky header */}
-          <header className="lg:col-span-4">
-            <h2 className="hidden lg:block text-3xl font-semibold text-gray-800 sticky top-28 z-20">
-              <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Photo
-              </span>
-              <span className="text-gray-600">graphy</span>
-            </h2>
-          </header>
+      {/* Header */}
+      <div className="mx-auto mb-10 px-6 sm:px-10" style={{ maxWidth: '90%' }}>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <h2 className="text-3xl sm:text-4xl font-semibold text-gray-800">
+            <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              Photo
+            </span>
+            <span className="text-gray-600">graphy</span>
+          </h2>
+          <Link
+            to="/#photography"
+            className="inline-flex items-center text-sm font-medium text-indigo-500 hover:text-purple-500 transition-colors"
+          >
+            ← Back to portfolio
+          </Link>
+        </div>
+      </div>
 
-          <div className="lg:col-span-8">
-            {/* Mobile header */}
-            <h2 className="text-4xl text-center mb-10 font-semibold text-gray-800 lg:hidden">
-              <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Photo
-              </span>
-              <span className="text-gray-600">graphy</span>
-            </h2>
+      {/* Gallery */}
+      <div className="mx-auto px-6 sm:px-10" style={{ maxWidth: '90%' }}>
+        {/* Loading state */}
+        {loading && (
+          <div className="flex justify-center items-center py-24">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+          </div>
+        )}
 
-            {/* Glass panel container */}
-            <div className="glass-panel relative overflow-hidden p-6 md:p-10 rounded-[30px]">
-              {/* Header row */}
-              <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-gray-400 mb-8">
-                <div className="flex items-center gap-2">
-                  <span>Browse</span>
-                  <span className="text-gray-300">/</span>
-                  <span className="text-gray-600">Photos</span>
+        {/* Error state */}
+        {error && !loading && (
+          <div className="text-amber-600 text-center text-sm mb-4">
+            Using offline gallery
+          </div>
+        )}
+
+        {/* Gallery with month groups */}
+        {!loading && (
+          <div ref={galleryRef} id="photos-page-gallery">
+            {photoGroups.map((group, groupIndex) => (
+              <div key={group.label} className={groupIndex > 0 ? "mt-10" : ""}>
+                {/* Month header */}
+                <h3 className="text-sm uppercase tracking-[0.2em] text-gray-400 mb-4 pb-2 border-b border-gray-200/50">
+                  {group.label}
+                </h3>
+
+                {/* Desktop: justified gallery */}
+                <div className="justified-gallery">
+                  {group.photos.map((photo) => (
+                    <a
+                      key={photo.id}
+                      href={photo.src}
+                      data-pswp-width={photo.width}
+                      data-pswp-height={photo.height}
+                      className="photo-item justified-gallery-item"
+                      style={{ flexGrow: photo.width / photo.height }}
+                    >
+                      <img
+                        src={photo.thumb}
+                        alt={photo.alt || photo.caption || "Photo"}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </a>
+                  ))}
                 </div>
-                <Link
-                  to="/#photography"
-                  className="inline-flex items-center font-medium text-indigo-500 hover:text-purple-500 transition-colors normal-case tracking-normal"
-                >
-                  ← Back to portfolio
-                </Link>
-              </div>
 
-              {/* Loading state */}
-              {loading && (
-                <div className="flex justify-center items-center py-24">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
-                </div>
-              )}
-
-              {/* Error state */}
-              {error && !loading && (
-                <div className="text-amber-600 text-center text-sm mb-4">
-                  Using offline gallery
-                </div>
-              )}
-
-              {/* Gallery with month groups */}
-              {!loading && (
-                <div ref={galleryRef} id="photos-page-gallery">
-                  {photoGroups.map((group, groupIndex) => (
-                    <div key={group.label} className={groupIndex > 0 ? "mt-10" : ""}>
-                      {/* Month header */}
-                      <h3 className="text-sm uppercase tracking-[0.2em] text-gray-400 mb-4 pb-2 border-b border-gray-200/50">
-                        {group.label}
-                      </h3>
-
-                      {/* Photo grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        {group.photos.map((photo) => (
-                          <a
-                            key={photo.id}
-                            href={photo.src}
-                            data-pswp-width={photo.width}
-                            data-pswp-height={photo.height}
-                            className="photo-item block aspect-square overflow-hidden rounded-2xl glass-panel group cursor-pointer transition-transform duration-300 hover:-translate-y-1"
-                          >
-                            <img
-                              src={photo.thumb}
-                              alt={photo.alt || photo.caption || "Photo"}
-                              loading="lazy"
-                              decoding="async"
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          </a>
-                        ))}
-                      </div>
+                {/* Mobile: masonry columns preserving aspect ratio */}
+                <div className="masonry-mobile">
+                  {distributeToColumns(group.photos, 2).map((col, colIdx) => (
+                    <div key={colIdx} className="masonry-mobile-col">
+                      {col.map((photo) => (
+                        <a
+                          key={photo.id}
+                          href={photo.src}
+                          data-pswp-width={photo.width}
+                          data-pswp-height={photo.height}
+                          className="photo-item masonry-mobile-item"
+                        >
+                          <img
+                            src={photo.thumb}
+                            alt={photo.alt || photo.caption || "Photo"}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </a>
+                      ))}
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

@@ -8,11 +8,9 @@ import { BlogHome } from './components/BlogHome';
 import { BlogPage } from './components/BlogPage';
 import { BLOG_POSTS } from './constants';
 import { MainLayout } from './components/MainLayout';
-import { Header } from './components/Header';
-import { Projects } from './components/Projects';
+import { Blog } from './components/Work';
 import { Photography } from './components/Photography';
 import { PhotosPage } from './components/PhotosPage';
-import { Blog } from './components/Blog';
 import { Resume } from './components/Resume';
 
 // Create a context to provide the setActiveSection function down the component tree
@@ -69,13 +67,11 @@ function App() {
               <Route
                 index
                 element={
-                  <>
-                    <Header />
-                    <Projects />
-                    <Photography />
+                  <div className="pt-20">
                     <Blog />
+                    <Photography />
                     <Resume />
-                  </>
+                  </div>
                 }
               />
               <Route path="blog" element={<BlogHome posts={BLOG_POSTS} />} />
