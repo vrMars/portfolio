@@ -13,8 +13,6 @@ import { Photography } from './components/Photography';
 import { PhotosPage } from './components/PhotosPage';
 import { Resume } from './components/Resume';
 
-// Create a context to provide the setActiveSection function down the component tree
-// without prop drilling.
 export const ActiveSectionContext = createContext<(id: string) => void>(() => {});
 
 function App() {
@@ -59,8 +57,8 @@ function App() {
   return (
     <div className="bg-transparent">
       <BackgroundManager />
-      <Navbar />
       <ActiveSectionContext.Provider value={noop}>
+      <Navbar />
         <main>
           <Routes location={location}>
             <Route path="/" element={<MainLayout />}>

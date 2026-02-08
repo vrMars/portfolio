@@ -95,7 +95,7 @@ export const Section: React.FC<SectionProps> = ({
           </header>
           <div className="lg:col-span-8">
             {/* Mobile-only in-flow header */}
-            <h2 className="text-2xl md:text-4xl text-center mb-6 md:mb-10 font-semibold text-gray-800 lg:hidden">
+            <h2 data-section-heading={id} className="text-2xl md:text-4xl text-center mb-6 md:mb-10 font-semibold text-gray-800 lg:hidden">
               <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 {highlightedText}
               </span>

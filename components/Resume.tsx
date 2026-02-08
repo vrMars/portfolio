@@ -7,7 +7,7 @@ export const Resume: React.FC = () => {
   return (
     <Section
       id="resume"
-      title="Experience & Education"
+      title="Experience"
       withSurface={false}
     >
       <div className="flex justify-end mb-8">
