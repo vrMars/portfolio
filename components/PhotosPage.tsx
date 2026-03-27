@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import PhotoSwipe from "photoswipe";
 import "photoswipe/style.css";
 import { usePhotos, PhotoWithTimestamp } from "../hooks/usePhotos";
 
-// Fallback photos
 const fallbackPhotos: PhotoWithTimestamp[] = [
   {
     id: "1",
@@ -28,7 +27,6 @@ const fallbackPhotos: PhotoWithTimestamp[] = [
   },
 ];
 
-// Group photos by month
 interface PhotoGroup {
   label: string;
   photos: PhotoWithTimestamp[];
@@ -76,10 +74,26 @@ export const PhotosPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    let resizeTimeout: ReturnType<typeof setTimeout>;
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    const debouncedCheck = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(checkMobile, 150);
+    };
+    checkMobile();
+    window.addEventListener('resize', debouncedCheck);
+    return () => {
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', debouncedCheck);
+    };
+  }, []);
+
   const allPhotos = photos.length > 0 ? photos : fallbackPhotos;
   const photoGroups = useMemo(() => groupPhotosByMonth(allPhotos), [allPhotos]);
 
-  // Initialize PhotoSwipe
   useEffect(() => {
     if (!galleryRef.current || allPhotos.length === 0) return;
 
@@ -155,7 +169,7 @@ export const PhotosPage: React.FC = () => {
   }, [allPhotos]);
 
   return (
-    <section className="relative py-24 lg:py-32">
+    <section className="pt-28 pb-20">
       {/* EXIF HUD Styles */}
       <style>{`
         .pswp__exif-container {
@@ -166,14 +180,14 @@ export const PhotosPage: React.FC = () => {
           pointer-events: none;
         }
         .pswp__exif-hud {
-          background: rgba(0, 0, 0, 0.7);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          border-radius: 12px;
+          background: rgba(0, 0, 0, 0.75);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-radius: 8px;
           padding: 12px 16px;
           color: white;
           font-size: 13px;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: 'Inter', system-ui, sans-serif;
           max-width: 320px;
           line-height: 1.4;
         }
@@ -203,7 +217,7 @@ export const PhotosPage: React.FC = () => {
         .exif-settings span {
           background: rgba(255, 255, 255, 0.1);
           padding: 4px 8px;
-          border-radius: 6px;
+          border-radius: 4px;
           font-size: 12px;
           font-weight: 500;
         }
@@ -225,155 +239,144 @@ export const PhotosPage: React.FC = () => {
         .justified-gallery {
           display: flex;
           flex-wrap: wrap;
-          gap: 6px;
+          gap: 4px;
         }
         .justified-gallery::after {
           content: '';
           flex-grow: 999999999;
         }
         .justified-gallery-item {
-          height: 220px;
+          height: 240px;
           overflow: hidden;
-          border-radius: 16px;
           cursor: pointer;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .justified-gallery-item:hover {
-          transform: translateY(-4px);
+          border-radius: 2px;
         }
         .justified-gallery-item img {
           height: 100%;
           width: 100%;
           object-fit: cover;
-          transition: transform 0.5s ease;
+          transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         .justified-gallery-item:hover img {
+          transform: scale(1.03);
+        }
+        .masonry-mobile-active {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 4px;
+        }
+        .masonry-mobile-active .masonry-mobile-col {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .masonry-mobile-item {
+          overflow: hidden;
+          border-radius: 2px;
+          cursor: pointer;
+        }
+        .masonry-mobile-item img {
+          width: 100%;
+          height: auto;
+          display: block;
+          transition: transform 500ms ease;
+        }
+        .masonry-mobile-item:active img {
           transform: scale(1.01);
-        }
-        @media (max-width: 640px) {
-          .justified-gallery {
-            display: none;
-          }
-        }
-        .masonry-mobile {
-          display: none;
-        }
-        @media (max-width: 640px) {
-          .masonry-mobile {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-          }
-          .masonry-mobile-col {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-          }
-          .masonry-mobile-item {
-            overflow: hidden;
-            border-radius: 10px;
-            cursor: pointer;
-          }
-          .masonry-mobile-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.5s ease;
-          }
-          .masonry-mobile-item:active img {
-            transform: scale(1.01);
-          }
         }
       `}</style>
 
       {/* Header */}
-      <div className="mx-auto mb-10 px-6 sm:px-10" style={{ maxWidth: '90%' }}>
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <h2 className="text-3xl sm:text-4xl font-semibold text-gray-800">
-            <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Photo
-            </span>
-            <span className="text-gray-600">graphy</span>
-          </h2>
+      <div className="max-w-6xl mx-auto mb-12 px-6 lg:px-8">
+        <div className="flex items-center justify-between mb-6">
+          <nav className="flex items-center gap-2 text-xs font-sans uppercase tracking-[0.15em] text-warm-gray">
+            <Link to="/" className="text-terracotta hover:text-terracotta-light transition-colors">
+              Home
+            </Link>
+            <span>/</span>
+            <span className="text-neutral-600">Photography</span>
+          </nav>
           <Link
             to="/#photography"
-            className="inline-flex items-center text-sm font-medium text-indigo-500 hover:text-purple-500 transition-colors"
+            className="text-sm font-medium text-terracotta hover:text-terracotta-light transition-colors duration-200"
           >
-            ← Back to portfolio
+            &larr; Back
           </Link>
         </div>
+        <hr className="rule-double mb-4" />
+        <h1 className="font-serif text-4xl md:text-5xl font-semibold text-black tracking-tight">
+          Photography
+        </h1>
       </div>
 
       {/* Gallery */}
-      <div className="mx-auto px-6 sm:px-10" style={{ maxWidth: '90%' }}>
-        {/* Loading state */}
+      <div className="max-w-6xl mx-auto px-6 lg:px-8">
         {loading && (
           <div className="flex justify-center items-center py-24">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-terracotta"></div>
           </div>
         )}
 
-        {/* Error state */}
         {error && !loading && (
-          <div className="text-amber-600 text-center text-sm mb-4">
+          <div className="text-warm-gray text-center text-sm mb-4">
             Using offline gallery
           </div>
         )}
 
-        {/* Gallery with month groups */}
         {!loading && (
           <div ref={galleryRef} id="photos-page-gallery">
             {photoGroups.map((group, groupIndex) => (
-              <div key={group.label} className={groupIndex > 0 ? "mt-10" : ""}>
-                {/* Month header */}
-                <h3 className="text-sm uppercase tracking-[0.2em] text-gray-400 mb-4 pb-2 border-b border-gray-200/50">
+              <div key={group.label} className={groupIndex > 0 ? "mt-12" : ""}>
+                <h3 className="text-xs font-sans uppercase tracking-[0.2em] text-warm-gray mb-4 pb-2 border-b border-warm-gray-light">
                   {group.label}
                 </h3>
 
-                {/* Desktop: justified gallery */}
-                <div className="justified-gallery">
-                  {group.photos.map((photo) => (
-                    <a
-                      key={photo.id}
-                      href={photo.src}
-                      data-pswp-width={photo.width}
-                      data-pswp-height={photo.height}
-                      className="photo-item justified-gallery-item"
-                      style={{ flexGrow: photo.width / photo.height }}
-                    >
-                      <img
-                        src={photo.thumb}
-                        alt={photo.alt || photo.caption || "Photo"}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </a>
-                  ))}
-                </div>
-
-                {/* Mobile: masonry columns preserving aspect ratio */}
-                <div className="masonry-mobile">
-                  {distributeToColumns(group.photos, 2).map((col, colIdx) => (
-                    <div key={colIdx} className="masonry-mobile-col">
-                      {col.map((photo) => (
-                        <a
-                          key={photo.id}
-                          href={photo.src}
-                          data-pswp-width={photo.width}
-                          data-pswp-height={photo.height}
-                          className="photo-item masonry-mobile-item"
-                        >
-                          <img
-                            src={photo.thumb}
-                            alt={photo.alt || photo.caption || "Photo"}
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </a>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+                {isMobile ? (
+                  /* Mobile: masonry columns */
+                  <div className="masonry-mobile-active">
+                    {distributeToColumns(group.photos, 2).map((col, colIdx) => (
+                      <div key={colIdx} className="masonry-mobile-col">
+                        {col.map((photo) => (
+                          <a
+                            key={photo.id}
+                            href={photo.src}
+                            data-pswp-width={photo.width}
+                            data-pswp-height={photo.height}
+                            className="photo-item masonry-mobile-item"
+                          >
+                            <img
+                              src={photo.thumb}
+                              alt={photo.alt || photo.caption || "Photo"}
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </a>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  /* Desktop: justified gallery */
+                  <div className="justified-gallery">
+                    {group.photos.map((photo) => (
+                      <a
+                        key={photo.id}
+                        href={photo.src}
+                        data-pswp-width={photo.width}
+                        data-pswp-height={photo.height}
+                        className="photo-item justified-gallery-item"
+                        style={{ flexGrow: photo.width / photo.height }}
+                      >
+                        <img
+                          src={photo.thumb}
+                          alt={photo.alt || photo.caption || "Photo"}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

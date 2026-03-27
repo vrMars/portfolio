@@ -12,47 +12,13 @@ import { Blog } from './components/Work';
 import { Photography } from './components/Photography';
 import { PhotosPage } from './components/PhotosPage';
 import { Resume } from './components/Resume';
+import { SectionDivider } from './components/SectionDivider';
 
 export const ActiveSectionContext = createContext<(id: string) => void>(() => {});
 
 function App() {
   const location = useLocation();
   const noop = useMemo(() => (() => {}), []);
-
-  // Auto-enable reduced effects for users who prefer reduced motion
-  // or when a quick FPS probe suggests a lower refresh budget.
-  useEffect(() => {
-    const root = document.documentElement;
-
-    // Respect OS preference immediately
-    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) {
-      root.classList.add('reduced-effects');
-    }
-
-    // Heuristic FPS probe: sample ~40 frames and estimate average frame time
-    let rafId = 0;
-    let frames = 0;
-    let start = performance.now();
-    const sampleFrames = 40;
-
-    const tick = () => {
-      frames += 1;
-      if (frames >= sampleFrames) {
-        const elapsed = performance.now() - start;
-        const avgFrame = elapsed / frames; // ms per frame
-        // If avg frame > 18ms (~55fps) enable reduced effects
-        if (avgFrame > 18) {
-          root.classList.add('reduced-effects');
-        }
-        return;
-      }
-      rafId = requestAnimationFrame(tick);
-    };
-
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, []);
 
   return (
     <div className="bg-transparent">
@@ -65,9 +31,11 @@ function App() {
               <Route
                 index
                 element={
-                  <div className="pt-20">
-                    <Blog />
+                  <div className="pt-[72px]">
                     <Photography />
+                    <SectionDivider topColor="#F4F3EE" bottomColor="#EAE8E1" />
+                    <Blog />
+                    <SectionDivider topColor="#EAE8E1" bottomColor="#F4F3EE" />
                     <Resume />
                   </div>
                 }
@@ -95,18 +63,18 @@ const BlogPageWrapper: React.FC = () => {
 
   if (!post) {
     return (
-      <main className="py-32">
-        <div className="container mx-auto px-6 lg:px-8 max-w-3xl text-center space-y-6">
-          <h1 className="text-4xl font-semibold text-white/90">Post not found</h1>
-          <p className="text-slate-200/70">
-            The article you were looking for doesn’t exist anymore. Head back to the blog to browse the latest stories.
+      <main className="pt-32 pb-20">
+        <div className="max-w-3xl mx-auto px-6 lg:px-8 text-center space-y-6">
+          <h1 className="font-serif text-4xl font-semibold text-black">Post not found</h1>
+          <p className="text-neutral-500">
+            The article you were looking for doesn't exist anymore.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/blog" className="inline-flex items-center text-sm font-medium text-sky-200 hover:text-white transition-colors">
-              ← Back to all posts
+            <Link to="/blog" className="text-sm font-medium text-terracotta hover:text-terracotta-light transition-colors">
+              &larr; Back to all posts
             </Link>
-            <Link to="/" className="inline-flex items-center text-sm font-medium text-sky-200 hover:text-white transition-colors">
-              Return to portfolio
+            <Link to="/" className="text-sm font-medium text-terracotta hover:text-terracotta-light transition-colors">
+              Return home
             </Link>
           </div>
         </div>

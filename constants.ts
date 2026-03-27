@@ -59,7 +59,7 @@ export const EXPERIENCES: Experience[] = [
 ];
 
 export const NAV_LINKS = [
-  { name: 'Blog', href: '#blog' },
   { name: 'Photography', href: '#photography' },
+  { name: 'Blog', href: '#blog' },
   { name: 'Experience', href: '#resume' },
 ];

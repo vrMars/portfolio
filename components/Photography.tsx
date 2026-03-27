@@ -1,10 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Section } from "./Section";
-import { PhotoGallery } from "./PhotoGallery";
+import { PhotoCarousel } from "./PhotoCarousel";
 import { usePhotos, PhotoWithTimestamp } from "../hooks/usePhotos";
 
-// Fallback photos used when Firestore is unavailable or empty
 const fallbackPhotos: PhotoWithTimestamp[] = [
   {
     id: "1",
@@ -82,10 +81,7 @@ const fallbackPhotos: PhotoWithTimestamp[] = [
 export const Photography: React.FC = () => {
   const { photos, loading, error } = usePhotos();
 
-  // Use Firestore photos if available, otherwise fall back to static photos
   const allPhotos = photos.length > 0 ? photos : fallbackPhotos;
-
-  // Only show first 6 photos on homepage
   const displayPhotos = allPhotos.slice(0, 6);
   const hasMorePhotos = allPhotos.length > 6;
 
@@ -93,46 +89,32 @@ export const Photography: React.FC = () => {
     <Section
       id="photography"
       title="Photography"
-      highlightedWordOverride="Photo"
-      withSurface={false}
+      highlightedWordOverride="Photography"
+      bgColor="#F4F3EE"
     >
       {loading && (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+        <div className="flex justify-center items-center py-16">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-terracotta"></div>
         </div>
       )}
 
       {error && !loading && (
-        <div className="text-amber-600 text-center text-sm mb-4">
+        <div className="text-warm-gray text-center text-sm mb-6">
           Using offline gallery
         </div>
       )}
 
       {!loading && (
         <>
-          <PhotoGallery photos={displayPhotos} defaultDisplayMode="soft-shadow" />
+          <PhotoCarousel photos={displayPhotos} />
 
           {hasMorePhotos && (
-            <div className="flex justify-center mt-8">
+            <div className="mt-10 pt-6 border-t border-warm-gray-light">
               <Link
                 to="/photos"
-                className="group flex flex-col items-center gap-2 text-gray-500 hover:text-indigo-500 transition-colors"
+                className="text-sm font-medium text-terracotta hover:text-terracotta-light transition-colors duration-200"
               >
-                <span className="text-sm font-medium">View all photos</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 animate-bounce"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                  />
-                </svg>
+                View all photos &rarr;
               </Link>
             </div>
           )}

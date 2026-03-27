@@ -1,9 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Section } from './Section';
-import { ProjectCard } from './ProjectCard';
 import { BlogCard } from './BlogCard';
-import { PROJECTS, BLOG_POSTS } from '../constants';
+import { BLOG_POSTS } from '../constants';
 
 export const Blog: React.FC = () => {
   const featuredPosts = BLOG_POSTS.slice(0, 3);
@@ -11,28 +10,26 @@ export const Blog: React.FC = () => {
   return (
     <Section
       id="blog"
-      title="Blog"
-      highlightedWordOverride="Blog"
-      withSurface={false}
-      surfaceClassName="space-y-8"
+      title="Writing"
+      highlightedWordOverride="Writing"
+      bgColor="#EAE8E1"
     >
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-        {PROJECTS.map((project) => (
-          <ProjectCard key={project.title} project={project} />
-        ))}
-      </div>
-
       {featuredPosts.length > 0 && (
-        <div className="space-y-6 mt-8">
-          {featuredPosts.map((post) => (
-            <BlogCard key={post.slug} post={post} />
+        <div>
+          {featuredPosts.map((post, index) => (
+            <React.Fragment key={post.slug}>
+              <BlogCard post={post} />
+              {index < featuredPosts.length - 1 && (
+                <hr className="rule-thin my-8" />
+              )}
+            </React.Fragment>
           ))}
-          <div className="flex justify-center pt-2">
+          <div className="mt-10 pt-6 border-t border-warm-gray-light">
             <Link
               to="/blog"
-              className="glass-button rounded-full px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-indigo-500 transition-colors"
+              className="text-sm font-medium text-terracotta hover:text-terracotta-light transition-colors duration-200"
             >
-              View all posts
+              View all posts &rarr;
             </Link>
           </div>
         </div>
