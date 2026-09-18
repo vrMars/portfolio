@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import PhotoSwipe from 'photoswipe';
 import 'photoswipe/style.css';
@@ -10,122 +10,6 @@ interface PhotoCarouselProps {
   fadeBgColor?: string;
 }
 
-type ScrollDirection = 'forward' | 'backward' | 'paused';
-
-const LeftFilmRoll: React.FC<{ animState: ScrollDirection }> = ({ animState }) => {
-  const animClass =
-    animState === 'paused'
-      ? 'film-roll-left-paused'
-      : animState === 'backward'
-      ? 'film-roll-left-backward'
-      : 'film-roll-left-forward';
-
-  return (
-    <div
-      className="absolute left-0 top-0 bottom-0 w-3 md:w-3.5 pointer-events-none z-10 select-none overflow-hidden rounded-l-sm"
-      style={{
-        background:
-          'linear-gradient(90deg, rgba(14,13,12,0.96) 0%, rgba(30,27,24,0.92) 25%, rgba(56,51,45,0.86) 50%, rgba(28,25,23,0.92) 75%, rgba(14,13,12,0.96) 100%)',
-        boxShadow: '2px 0 8px -1px rgba(0,0,0,0.35), 1px 0 3px rgba(0,0,0,0.25)',
-        borderRight: '1px solid rgba(255,255,255,0.07)',
-      }}
-      aria-hidden="true"
-    >
-      {/* Top rim shade */}
-      <div
-        className="absolute top-0 left-0 right-0 h-1.5 pointer-events-none z-20"
-        style={{
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 100%)',
-        }}
-      />
-      {/* Bottom rim shade */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-1.5 pointer-events-none z-20"
-        style={{
-          background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 100%)',
-        }}
-      />
-
-      {/* Animated unrolling acetate striations (moving outward to right) */}
-      <div
-        className={`absolute inset-0 film-roll-stripes ${animClass}`}
-        style={{
-          maskImage:
-            'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
-          WebkitMaskImage:
-            'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
-        }}
-      />
-
-      {/* Subtle cylindrical gloss highlight */}
-      <div
-        className="absolute left-1 top-0 bottom-0 w-0.5 opacity-30 pointer-events-none"
-        style={{
-          background:
-            'linear-gradient(to bottom, transparent, rgba(255,255,255,0.45) 20%, rgba(255,255,255,0.45) 80%, transparent)',
-        }}
-      />
-    </div>
-  );
-};
-
-const RightFilmRoll: React.FC<{ animState: ScrollDirection }> = ({ animState }) => {
-  const animClass =
-    animState === 'paused'
-      ? 'film-roll-right-paused'
-      : animState === 'backward'
-      ? 'film-roll-right-backward'
-      : 'film-roll-right-forward';
-
-  return (
-    <div
-      className="absolute right-0 top-0 bottom-0 w-3 md:w-3.5 pointer-events-none z-10 select-none overflow-hidden rounded-r-sm"
-      style={{
-        background:
-          'linear-gradient(90deg, rgba(14,13,12,0.96) 0%, rgba(28,25,23,0.92) 25%, rgba(56,51,45,0.86) 50%, rgba(30,27,24,0.92) 75%, rgba(14,13,12,0.96) 100%)',
-        boxShadow: '-2px 0 8px -1px rgba(0,0,0,0.35), -1px 0 3px rgba(0,0,0,0.25)',
-        borderLeft: '1px solid rgba(255,255,255,0.07)',
-      }}
-      aria-hidden="true"
-    >
-      {/* Top rim shade */}
-      <div
-        className="absolute top-0 left-0 right-0 h-1.5 pointer-events-none z-20"
-        style={{
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 100%)',
-        }}
-      />
-      {/* Bottom rim shade */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-1.5 pointer-events-none z-20"
-        style={{
-          background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 100%)',
-        }}
-      />
-
-      {/* Animated unrolling acetate striations (moving inward/opposite direction) */}
-      <div
-        className={`absolute inset-0 film-roll-stripes ${animClass}`}
-        style={{
-          maskImage:
-            'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
-          WebkitMaskImage:
-            'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
-        }}
-      />
-
-      {/* Subtle cylindrical gloss highlight */}
-      <div
-        className="absolute right-1 top-0 bottom-0 w-0.5 opacity-30 pointer-events-none"
-        style={{
-          background:
-            'linear-gradient(to bottom, transparent, rgba(255,255,255,0.45) 20%, rgba(255,255,255,0.45) 80%, transparent)',
-        }}
-      />
-    </div>
-  );
-};
-
 export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   photos,
   galleryId = 'photo-carousel',
@@ -134,7 +18,26 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const lightboxRef = useRef<PhotoSwipeLightbox | null>(null);
   const isLightboxOpenRef = useRef(false);
-  const [scrollDirection, setScrollDirection] = useState<ScrollDirection>('forward');
+
+  // References for direct, zero-overhead DOM transforms
+  const leftImgRef = useRef<HTMLImageElement>(null);
+  const rightImgRef = useRef<HTMLImageElement>(null);
+  const containerHeightRef = useRef<number>(350);
+  const containerWidthRef = useRef<number>(1000);
+
+  // Measure carousel dimensions on mount and resize using zero-overhead listener
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (scrollRef.current) {
+        containerHeightRef.current = scrollRef.current.clientHeight || 350;
+        containerWidthRef.current = scrollRef.current.clientWidth || 1000;
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
 
   // Horizontal scroll with mouse wheel
   useEffect(() => {
@@ -152,7 +55,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     return () => el.removeEventListener('wheel', handleWheel);
   }, []);
 
-  // Auto-scroll through the carousel slowly with directional animation sync
+  // Auto-scroll loop with pure-math cylindrical photo wrap-around projection
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -162,38 +65,23 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     let animId: number;
     let lastTime = performance.now();
     let scrollPos = el.scrollLeft;
-    let lastManualScrollLeft = el.scrollLeft;
-    let manualScrollTimeout: ReturnType<typeof setTimeout> | null = null;
     const speed = 30; // pixels per second
 
     const pause = () => {
       isPaused = true;
       scrollPos = el.scrollLeft;
-      setScrollDirection('paused');
     };
 
     const resume = () => {
       scrollPos = el.scrollLeft;
       lastTime = performance.now();
       isPaused = false;
-      setScrollDirection('forward');
     };
 
     const handleScroll = () => {
-      if (isResetting) return;
-      const currentScroll = el.scrollLeft;
-      const diff = currentScroll - lastManualScrollLeft;
-      lastManualScrollLeft = currentScroll;
-
       if (isPaused) {
-        scrollPos = currentScroll;
-        if (Math.abs(diff) > 0.5) {
-          setScrollDirection(diff > 0 ? 'forward' : 'backward');
-          if (manualScrollTimeout) clearTimeout(manualScrollTimeout);
-          manualScrollTimeout = setTimeout(() => {
-            if (isPaused) setScrollDirection('paused');
-          }, 350);
-        }
+        scrollPos = el.scrollLeft;
+        updateRollProjections(scrollPos);
       }
     };
 
@@ -202,6 +90,70 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     el.addEventListener('touchstart', pause, { passive: true });
     el.addEventListener('touchend', resume, { passive: true });
     el.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Pure math function to project active photos onto left & right cylinders
+    const updateRollProjections = (currentScroll: number) => {
+      const h = containerHeightRef.current || 350;
+      const w = containerWidthRef.current || 1000;
+      const isMob = w < 768;
+      const gap = isMob ? 12 : 16;
+      const padding = 8;
+      const rollW = isMob ? 16 : 20;
+
+      let curX = padding;
+      let leftFound = false;
+      let rightFound = false;
+      const rightEdge = currentScroll + w;
+      const rightRollStart = rightEdge - rollW;
+
+      for (let i = 0; i < photos.length; i++) {
+        const p = photos[i];
+        const pw = h * (p.width / p.height);
+        const pr = curX + pw;
+
+        // Left roll projection
+        if (!leftFound && curX <= currentScroll + rollW && pr >= currentScroll) {
+          leftFound = true;
+          const offset = currentScroll - curX;
+          if (leftImgRef.current) {
+            const src = p.thumb || p.src;
+            if (leftImgRef.current.dataset.src !== src) {
+              leftImgRef.current.src = src;
+              leftImgRef.current.dataset.src = src;
+            }
+            leftImgRef.current.style.display = 'block';
+            leftImgRef.current.style.width = `${pw}px`;
+            leftImgRef.current.style.transform = `translateX(-${offset}px) scaleX(0.92)`;
+          }
+        }
+
+        // Right roll projection
+        if (!rightFound && curX <= rightEdge && pr >= rightRollStart) {
+          rightFound = true;
+          const offset = curX - rightRollStart;
+          if (rightImgRef.current) {
+            const src = p.thumb || p.src;
+            if (rightImgRef.current.dataset.src !== src) {
+              rightImgRef.current.src = src;
+              rightImgRef.current.dataset.src = src;
+            }
+            rightImgRef.current.style.display = 'block';
+            rightImgRef.current.style.width = `${pw}px`;
+            rightImgRef.current.style.transform = `translateX(${offset}px) scaleX(0.92)`;
+          }
+        }
+
+        curX = pr + gap;
+        if (leftFound && rightFound) break;
+      }
+
+      if (!leftFound && leftImgRef.current) {
+        leftImgRef.current.style.display = 'none';
+      }
+      if (!rightFound && rightImgRef.current) {
+        rightImgRef.current.style.display = 'none';
+      }
+    };
 
     const step = (now: number) => {
       const dt = Math.min((now - lastTime) / 1000, 0.1);
@@ -212,14 +164,12 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
         if (maxScroll > 1) {
           if (scrollPos >= maxScroll - 1) {
             isResetting = true;
-            setScrollDirection('backward');
             setTimeout(() => {
               el.scrollTo({ left: 0, behavior: 'smooth' });
               setTimeout(() => {
                 scrollPos = 0;
                 lastTime = performance.now();
                 isResetting = false;
-                setScrollDirection('forward');
               }, 1200);
             }, 2000);
           } else {
@@ -229,6 +179,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
         }
       }
 
+      updateRollProjections(isResetting ? el.scrollLeft : scrollPos);
       animId = requestAnimationFrame(step);
     };
 
@@ -236,7 +187,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
 
     return () => {
       cancelAnimationFrame(animId);
-      if (manualScrollTimeout) clearTimeout(manualScrollTimeout);
       el.removeEventListener('mouseenter', pause);
       el.removeEventListener('mouseleave', resume);
       el.removeEventListener('touchstart', pause);
@@ -263,12 +213,10 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
 
     lightbox.on('beforeOpen', () => {
       isLightboxOpenRef.current = true;
-      setScrollDirection('paused');
     });
 
     lightbox.on('close', () => {
       isLightboxOpenRef.current = false;
-      setScrollDirection('forward');
     });
 
     lightbox.on('uiRegister', function () {
@@ -341,78 +289,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           display: none;
         }
 
-        /* Left roll: unspooling film toward the right */
-        @keyframes rollLeftForward {
-          0% {
-            background-position-x: 0px;
-          }
-          100% {
-            background-position-x: 28px;
-          }
-        }
-        @keyframes rollLeftBackward {
-          0% {
-            background-position-x: 28px;
-          }
-          100% {
-            background-position-x: 0px;
-          }
-        }
-
-        /* Right roll: taking up incoming film from the left (opposite phase/direction) */
-        @keyframes rollRightForward {
-          0% {
-            background-position-x: 28px;
-          }
-          100% {
-            background-position-x: 0px;
-          }
-        }
-        @keyframes rollRightBackward {
-          0% {
-            background-position-x: 0px;
-          }
-          100% {
-            background-position-x: 28px;
-          }
-        }
-
-        .film-roll-stripes {
-          background-image: repeating-linear-gradient(
-            90deg,
-            transparent 0px,
-            transparent 6px,
-            rgba(255, 255, 255, 0.02) 8px,
-            rgba(255, 255, 255, 0.08) 12px,
-            rgba(255, 255, 255, 0.02) 16px,
-            transparent 18px,
-            transparent 28px
-          );
-          background-size: 28px 100%;
-        }
-
-        .film-roll-left-forward {
-          animation: rollLeftForward 1.8s linear infinite;
-        }
-        .film-roll-left-backward {
-          animation: rollLeftBackward 0.6s linear infinite;
-        }
-        .film-roll-left-paused {
-          animation: rollLeftForward 1.8s linear infinite;
-          animation-play-state: paused;
-        }
-
-        .film-roll-right-forward {
-          animation: rollRightForward 1.8s linear infinite;
-        }
-        .film-roll-right-backward {
-          animation: rollRightBackward 0.6s linear infinite;
-        }
-        .film-roll-right-paused {
-          animation: rollRightForward 1.8s linear infinite;
-          animation-play-state: paused;
-        }
-
         .pswp__exif-container {
           position: absolute;
           bottom: 16px;
@@ -480,8 +356,89 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       `}</style>
 
       <div ref={galleryRef} className="relative">
-        <LeftFilmRoll animState={scrollDirection} />
-        <RightFilmRoll animState={scrollDirection} />
+        {/* Left Film Roll Cylinder with pure-math wrap-around projection */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-3.5 md:w-4 pointer-events-none z-10 select-none overflow-hidden rounded-l-sm"
+          style={{
+            backgroundColor: '#0e0d0c',
+            boxShadow: '2px 0 8px -1px rgba(0,0,0,0.35), 1px 0 3px rgba(0,0,0,0.25)',
+            borderRight: '1px solid rgba(255,255,255,0.08)',
+          }}
+          aria-hidden="true"
+        >
+          {/* Dimmed wrap-around projected photo slice */}
+          <img
+            ref={leftImgRef}
+            alt=""
+            className="absolute top-0 bottom-0 h-full object-cover max-w-none pointer-events-none"
+            style={{
+              display: 'none',
+              transformOrigin: 'left center',
+              opacity: 0.38,
+              filter: 'contrast(1.1) brightness(0.85)',
+            }}
+          />
+
+          {/* Opaque 3D cylindrical lighting overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(90deg, rgba(12,11,10,0.85) 0%, rgba(20,18,16,0.3) 30%, rgba(255,255,255,0.18) 55%, rgba(18,16,14,0.45) 80%, rgba(12,11,10,0.9) 100%)',
+            }}
+          />
+
+          {/* Specular gloss highlight reflection */}
+          <div
+            className="absolute left-1 top-0 bottom-0 w-0.5 opacity-30 pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(to bottom, transparent, rgba(255,255,255,0.45) 20%, rgba(255,255,255,0.45) 80%, transparent)',
+            }}
+          />
+        </div>
+
+        {/* Right Film Roll Cylinder with pure-math wrap-around projection */}
+        <div
+          className="absolute right-0 top-0 bottom-0 w-3.5 md:w-4 pointer-events-none z-10 select-none overflow-hidden rounded-r-sm"
+          style={{
+            backgroundColor: '#0e0d0c',
+            boxShadow: '-2px 0 8px -1px rgba(0,0,0,0.35), -1px 0 3px rgba(0,0,0,0.25)',
+            borderLeft: '1px solid rgba(255,255,255,0.08)',
+          }}
+          aria-hidden="true"
+        >
+          {/* Dimmed wrap-around projected photo slice */}
+          <img
+            ref={rightImgRef}
+            alt=""
+            className="absolute top-0 bottom-0 h-full object-cover max-w-none pointer-events-none"
+            style={{
+              display: 'none',
+              transformOrigin: 'right center',
+              opacity: 0.38,
+              filter: 'contrast(1.1) brightness(0.85)',
+            }}
+          />
+
+          {/* Opaque 3D cylindrical lighting overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(90deg, rgba(12,11,10,0.9) 0%, rgba(18,16,14,0.45) 20%, rgba(255,255,255,0.18) 45%, rgba(20,18,16,0.3) 70%, rgba(12,11,10,0.85) 100%)',
+            }}
+          />
+
+          {/* Specular gloss highlight reflection */}
+          <div
+            className="absolute right-1 top-0 bottom-0 w-0.5 opacity-30 pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(to bottom, transparent, rgba(255,255,255,0.45) 20%, rgba(255,255,255,0.45) 80%, transparent)',
+            }}
+          />
+        </div>
 
         <div
           ref={scrollRef}
