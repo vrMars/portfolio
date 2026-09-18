@@ -343,17 +343,16 @@ export const PhotosPage: React.FC = () => {
                 return (
                   <div
                     key={item.id}
-                    className="inline-grid-item flex-shrink-0 flex flex-col justify-center bg-transparent select-none px-4 sm:px-6 md:px-8 items-start text-left"
+                    className="inline-grid-item flex-shrink-0 flex flex-col justify-center bg-transparent select-none pr-3 sm:pr-5 pl-1 sm:pl-2 items-start text-left"
                     style={{
-                      flexGrow: 0.72,
-                      flexBasis: "calc(var(--row-h) * 0.8)",
-                      minWidth: "200px",
+                      flexGrow: 0,
+                      flexShrink: 0,
                     }}
                   >
-                    <span className="block font-serif font-bold text-xl sm:text-2xl md:text-[28px] text-black tracking-tight leading-none whitespace-nowrap">
+                    <span className="block font-serif font-bold text-base sm:text-xl md:text-2xl text-black tracking-tight leading-none whitespace-nowrap">
                       {item.month}
                     </span>
-                    <span className="block font-serif font-bold text-base sm:text-lg md:text-xl text-neutral-500 tracking-tight mt-2 whitespace-nowrap">
+                    <span className="block font-serif font-bold text-xs sm:text-sm md:text-base text-neutral-400 tracking-tight mt-1 sm:mt-1.5 whitespace-nowrap">
                       {item.year}
                     </span>
                   </div>
