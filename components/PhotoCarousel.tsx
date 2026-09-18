@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import PhotoSwipe from 'photoswipe';
 import 'photoswipe/style.css';
@@ -10,189 +10,139 @@ interface PhotoCarouselProps {
   fadeBgColor?: string;
 }
 
-const LeftFilmEdge: React.FC<{ bgColor?: string }> = ({ bgColor = '#F4F3EE' }) => (
-  <div className="absolute left-0 top-0 bottom-0 w-20 md:w-28 pointer-events-none z-10 select-none overflow-hidden">
-    {/* Top sprocket rail fading into the photo flow */}
-    <div
-      className="absolute top-0 left-0 right-0 h-6 flex items-center pl-4 pr-1 gap-2"
-      style={{
-        background:
-          'linear-gradient(to right, rgba(20, 18, 16, 0.85) 0%, rgba(20, 18, 16, 0.6) 40%, rgba(20, 18, 16, 0.2) 75%, transparent 100%)',
-      }}
-    >
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
-        style={{ backgroundColor: bgColor }}
-      />
-      <span className="text-[6px] tracking-widest text-[#E0DDD5]/60 font-mono">24A</span>
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
-        style={{ backgroundColor: bgColor }}
-      />
-      <span className="text-[6px] tracking-widest text-[#E0DDD5]/40 font-mono">▶</span>
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner opacity-70"
-        style={{ backgroundColor: bgColor }}
-      />
-    </div>
+type ScrollDirection = 'forward' | 'backward' | 'paused';
 
-    {/* Bottom sprocket rail fading into the photo flow */}
-    <div
-      className="absolute bottom-0 left-0 right-0 h-6 flex items-center pl-4 pr-1 gap-2"
-      style={{
-        background:
-          'linear-gradient(to right, rgba(20, 18, 16, 0.85) 0%, rgba(20, 18, 16, 0.6) 40%, rgba(20, 18, 16, 0.2) 75%, transparent 100%)',
-      }}
-    >
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
-        style={{ backgroundColor: bgColor }}
-      />
-      <span className="text-[6px] tracking-widest text-[#E0DDD5]/60 font-mono">KODAK</span>
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
-        style={{ backgroundColor: bgColor }}
-      />
-      <span className="text-[6px] tracking-widest text-[#E0DDD5]/40 font-mono">400</span>
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner opacity-70"
-        style={{ backgroundColor: bgColor }}
-      />
-    </div>
+const LeftFilmRoll: React.FC<{ animState: ScrollDirection }> = ({ animState }) => {
+  const animClass =
+    animState === 'paused'
+      ? 'film-roll-anim-paused'
+      : animState === 'backward'
+      ? 'film-roll-anim-backward'
+      : 'film-roll-anim-forward';
 
-    {/* Film roll / canister spool cylinder on far left edge */}
-    <div
-      className="absolute left-0 top-0 bottom-0 w-3.5 md:w-4"
-      style={{
-        background:
-          'linear-gradient(90deg, #100f0e 0%, #25221e 22%, #3d3934 45%, #221f1c 70%, #100f0e 100%)',
-        boxShadow: '3px 0 10px rgba(0,0,0,0.4)',
-        borderRight: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: '2px 0 0 2px',
-      }}
-    >
-      {/* Top curled spool cap */}
+  return (
+    <div className="absolute left-0 top-0 bottom-0 w-3.5 md:w-4.5 pointer-events-none z-10 select-none">
+      {/* 3D cylindrical roll body */}
+      <div
+        className="relative w-full h-full overflow-hidden"
+        style={{
+          background:
+            'linear-gradient(90deg, #0e0d0c 0%, #22201c 22%, #3d3933 50%, #201e1b 78%, #100f0e 100%)',
+          boxShadow: '3px 0 10px rgba(0,0,0,0.45)',
+          borderRight: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '2px 0 0 2px',
+        }}
+      >
+        {/* Animated unrolling film layer striations */}
+        <div
+          className={`absolute inset-0 film-roll-stripes ${animClass}`}
+          style={{
+            maskImage:
+              'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
+            WebkitMaskImage:
+              'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
+          }}
+        />
+
+        {/* Specular gloss reflection down cylinder */}
+        <div
+          className="absolute left-1 top-0 bottom-0 w-0.5 md:w-1 opacity-35 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to bottom, transparent, rgba(255,255,255,0.5) 15%, rgba(255,255,255,0.5) 85%, transparent)',
+          }}
+        />
+      </div>
+
+      {/* Top spool cap */}
       <div
         className="absolute -top-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
         style={{
-          background: 'radial-gradient(ellipse at center, #35312c 0%, #100f0e 100%)',
+          background: 'radial-gradient(ellipse at center, #38342f 0%, #100f0e 100%)',
         }}
       />
-      {/* Bottom curled spool cap */}
+
+      {/* Bottom spool cap */}
       <div
         className="absolute -bottom-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
         style={{
-          background: 'radial-gradient(ellipse at center, #35312c 0%, #100f0e 100%)',
+          background: 'radial-gradient(ellipse at center, #38342f 0%, #100f0e 100%)',
         }}
       />
-      {/* Cylindrical gloss reflection */}
+    </div>
+  );
+};
+
+const RightFilmRoll: React.FC<{ animState: ScrollDirection }> = ({ animState }) => {
+  const animClass =
+    animState === 'paused'
+      ? 'film-roll-anim-paused'
+      : animState === 'backward'
+      ? 'film-roll-anim-backward'
+      : 'film-roll-anim-forward';
+
+  return (
+    <div className="absolute right-0 top-0 bottom-0 w-3.5 md:w-4.5 pointer-events-none z-10 select-none">
+      {/* 3D cylindrical roll body */}
       <div
-        className="absolute left-1 top-0 bottom-0 w-0.5 opacity-35"
+        className="relative w-full h-full overflow-hidden"
         style={{
           background:
-            'linear-gradient(to bottom, transparent, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0.6) 80%, transparent)',
+            'linear-gradient(90deg, #100f0e 0%, #201e1b 22%, #3d3933 50%, #22201c 78%, #0e0d0c 100%)',
+          boxShadow: '-3px 0 10px rgba(0,0,0,0.45)',
+          borderLeft: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '0 2px 2px 0',
         }}
-      />
-    </div>
-  </div>
-);
+      >
+        {/* Animated unrolling film layer striations */}
+        <div
+          className={`absolute inset-0 film-roll-stripes ${animClass}`}
+          style={{
+            maskImage:
+              'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
+            WebkitMaskImage:
+              'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
+          }}
+        />
 
-const RightFilmEdge: React.FC<{ bgColor?: string }> = ({ bgColor = '#F4F3EE' }) => (
-  <div className="absolute right-0 top-0 bottom-0 w-20 md:w-28 pointer-events-none z-10 select-none overflow-hidden">
-    {/* Top sprocket rail fading into the photo flow */}
-    <div
-      className="absolute top-0 left-0 right-0 h-6 flex items-center justify-end pr-4 pl-1 gap-2"
-      style={{
-        background:
-          'linear-gradient(to left, rgba(20, 18, 16, 0.85) 0%, rgba(20, 18, 16, 0.6) 40%, rgba(20, 18, 16, 0.2) 75%, transparent 100%)',
-      }}
-    >
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner opacity-70"
-        style={{ backgroundColor: bgColor }}
-      />
-      <span className="text-[6px] tracking-widest text-[#E0DDD5]/40 font-mono">◀</span>
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
-        style={{ backgroundColor: bgColor }}
-      />
-      <span className="text-[6px] tracking-widest text-[#E0DDD5]/60 font-mono">25</span>
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
-        style={{ backgroundColor: bgColor }}
-      />
-    </div>
+        {/* Specular gloss reflection down cylinder */}
+        <div
+          className="absolute right-1 top-0 bottom-0 w-0.5 md:w-1 opacity-35 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to bottom, transparent, rgba(255,255,255,0.5) 15%, rgba(255,255,255,0.5) 85%, transparent)',
+          }}
+        />
+      </div>
 
-    {/* Bottom sprocket rail fading into the photo flow */}
-    <div
-      className="absolute bottom-0 left-0 right-0 h-6 flex items-center justify-end pr-4 pl-1 gap-2"
-      style={{
-        background:
-          'linear-gradient(to left, rgba(20, 18, 16, 0.85) 0%, rgba(20, 18, 16, 0.6) 40%, rgba(20, 18, 16, 0.2) 75%, transparent 100%)',
-      }}
-    >
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner opacity-70"
-        style={{ backgroundColor: bgColor }}
-      />
-      <span className="text-[6px] tracking-widest text-[#E0DDD5]/40 font-mono">ISO</span>
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
-        style={{ backgroundColor: bgColor }}
-      />
-      <span className="text-[6px] tracking-widest text-[#E0DDD5]/60 font-mono">SAFETY</span>
-      <div
-        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
-        style={{ backgroundColor: bgColor }}
-      />
-    </div>
-
-    {/* Film roll / canister spool cylinder on far right edge */}
-    <div
-      className="absolute right-0 top-0 bottom-0 w-3.5 md:w-4"
-      style={{
-        background:
-          'linear-gradient(90deg, #100f0e 0%, #221f1c 22%, #3d3934 48%, #25221e 72%, #100f0e 100%)',
-        boxShadow: '-3px 0 10px rgba(0,0,0,0.4)',
-        borderLeft: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: '0 2px 2px 0',
-      }}
-    >
-      {/* Top curled spool cap */}
+      {/* Top spool cap */}
       <div
         className="absolute -top-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
         style={{
-          background: 'radial-gradient(ellipse at center, #35312c 0%, #100f0e 100%)',
+          background: 'radial-gradient(ellipse at center, #38342f 0%, #100f0e 100%)',
         }}
       />
-      {/* Bottom curled spool cap */}
+
+      {/* Bottom spool cap */}
       <div
         className="absolute -bottom-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
         style={{
-          background: 'radial-gradient(ellipse at center, #35312c 0%, #100f0e 100%)',
-        }}
-      />
-      {/* Cylindrical gloss reflection */}
-      <div
-        className="absolute right-1 top-0 bottom-0 w-0.5 opacity-35"
-        style={{
-          background:
-            'linear-gradient(to bottom, transparent, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0.6) 80%, transparent)',
+          background: 'radial-gradient(ellipse at center, #38342f 0%, #100f0e 100%)',
         }}
       />
     </div>
-  </div>
-);
+  );
+};
 
 export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   photos,
   galleryId = 'photo-carousel',
-  fadeBgColor = '#F4F3EE',
 }) => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lightboxRef = useRef<PhotoSwipeLightbox | null>(null);
   const isLightboxOpenRef = useRef(false);
+  const [scrollDirection, setScrollDirection] = useState<ScrollDirection>('forward');
 
   // Horizontal scroll with mouse wheel
   useEffect(() => {
@@ -210,7 +160,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     return () => el.removeEventListener('wheel', handleWheel);
   }, []);
 
-  // Auto-scroll through the carousel slowly
+  // Auto-scroll through the carousel slowly with directional animation sync
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -220,21 +170,38 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     let animId: number;
     let lastTime = performance.now();
     let scrollPos = el.scrollLeft;
+    let lastManualScrollLeft = el.scrollLeft;
+    let manualScrollTimeout: ReturnType<typeof setTimeout> | null = null;
     const speed = 30; // pixels per second
 
     const pause = () => {
       isPaused = true;
       scrollPos = el.scrollLeft;
+      setScrollDirection('paused');
     };
+
     const resume = () => {
       scrollPos = el.scrollLeft;
       lastTime = performance.now();
       isPaused = false;
+      setScrollDirection('forward');
     };
 
     const handleScroll = () => {
+      if (isResetting) return;
+      const currentScroll = el.scrollLeft;
+      const diff = currentScroll - lastManualScrollLeft;
+      lastManualScrollLeft = currentScroll;
+
       if (isPaused) {
-        scrollPos = el.scrollLeft;
+        scrollPos = currentScroll;
+        if (Math.abs(diff) > 0.5) {
+          setScrollDirection(diff > 0 ? 'forward' : 'backward');
+          if (manualScrollTimeout) clearTimeout(manualScrollTimeout);
+          manualScrollTimeout = setTimeout(() => {
+            if (isPaused) setScrollDirection('paused');
+          }, 350);
+        }
       }
     };
 
@@ -253,12 +220,14 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
         if (maxScroll > 1) {
           if (scrollPos >= maxScroll - 1) {
             isResetting = true;
+            setScrollDirection('backward');
             setTimeout(() => {
               el.scrollTo({ left: 0, behavior: 'smooth' });
               setTimeout(() => {
                 scrollPos = 0;
                 lastTime = performance.now();
                 isResetting = false;
+                setScrollDirection('forward');
               }, 1200);
             }, 2000);
           } else {
@@ -275,6 +244,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
 
     return () => {
       cancelAnimationFrame(animId);
+      if (manualScrollTimeout) clearTimeout(manualScrollTimeout);
       el.removeEventListener('mouseenter', pause);
       el.removeEventListener('mouseleave', resume);
       el.removeEventListener('touchstart', pause);
@@ -301,10 +271,12 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
 
     lightbox.on('beforeOpen', () => {
       isLightboxOpenRef.current = true;
+      setScrollDirection('paused');
     });
 
     lightbox.on('close', () => {
       isLightboxOpenRef.current = false;
+      setScrollDirection('forward');
     });
 
     lightbox.on('uiRegister', function () {
@@ -376,6 +348,51 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
         .carousel-scroll::-webkit-scrollbar {
           display: none;
         }
+
+        @keyframes rollForward {
+          0% {
+            background-position-x: 0px;
+          }
+          100% {
+            background-position-x: 32px;
+          }
+        }
+
+        @keyframes rollBackward {
+          0% {
+            background-position-x: 32px;
+          }
+          100% {
+            background-position-x: 0px;
+          }
+        }
+
+        .film-roll-stripes {
+          background-image: repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            rgba(255, 255, 255, 0.04) 4px,
+            rgba(255, 255, 255, 0.16) 9px,
+            rgba(255, 255, 255, 0.04) 14px,
+            transparent 18px,
+            transparent 32px
+          );
+          background-size: 32px 100%;
+        }
+
+        .film-roll-anim-forward {
+          animation: rollForward 1.6s linear infinite;
+        }
+
+        .film-roll-anim-backward {
+          animation: rollBackward 0.55s linear infinite;
+        }
+
+        .film-roll-anim-paused {
+          animation: rollForward 1.6s linear infinite;
+          animation-play-state: paused;
+        }
+
         .pswp__exif-container {
           position: absolute;
           bottom: 16px;
@@ -443,8 +460,8 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       `}</style>
 
       <div ref={galleryRef} className="relative">
-        <LeftFilmEdge bgColor={fadeBgColor} />
-        <RightFilmEdge bgColor={fadeBgColor} />
+        <LeftFilmRoll animState={scrollDirection} />
+        <RightFilmRoll animState={scrollDirection} />
 
         <div
           ref={scrollRef}
