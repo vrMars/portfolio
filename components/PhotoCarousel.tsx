@@ -15,58 +15,54 @@ type ScrollDirection = 'forward' | 'backward' | 'paused';
 const LeftFilmRoll: React.FC<{ animState: ScrollDirection }> = ({ animState }) => {
   const animClass =
     animState === 'paused'
-      ? 'film-roll-anim-paused'
+      ? 'film-roll-left-paused'
       : animState === 'backward'
-      ? 'film-roll-anim-backward'
-      : 'film-roll-anim-forward';
+      ? 'film-roll-left-backward'
+      : 'film-roll-left-forward';
 
   return (
-    <div className="absolute left-0 top-0 bottom-0 w-3.5 md:w-4.5 pointer-events-none z-10 select-none">
-      {/* 3D cylindrical roll body */}
+    <div
+      className="absolute left-0 top-0 bottom-0 w-3 md:w-3.5 pointer-events-none z-10 select-none overflow-hidden rounded-l-sm"
+      style={{
+        background:
+          'linear-gradient(90deg, rgba(14,13,12,0.96) 0%, rgba(30,27,24,0.92) 25%, rgba(56,51,45,0.86) 50%, rgba(28,25,23,0.92) 75%, rgba(14,13,12,0.96) 100%)',
+        boxShadow: '2px 0 8px -1px rgba(0,0,0,0.35), 1px 0 3px rgba(0,0,0,0.25)',
+        borderRight: '1px solid rgba(255,255,255,0.07)',
+      }}
+      aria-hidden="true"
+    >
+      {/* Top rim shade */}
       <div
-        className="relative w-full h-full overflow-hidden"
+        className="absolute top-0 left-0 right-0 h-1.5 pointer-events-none z-20"
         style={{
-          background:
-            'linear-gradient(90deg, #0e0d0c 0%, #22201c 22%, #3d3933 50%, #201e1b 78%, #100f0e 100%)',
-          boxShadow: '3px 0 10px rgba(0,0,0,0.45)',
-          borderRight: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '2px 0 0 2px',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 100%)',
         }}
-      >
-        {/* Animated unrolling film layer striations */}
-        <div
-          className={`absolute inset-0 film-roll-stripes ${animClass}`}
-          style={{
-            maskImage:
-              'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
-            WebkitMaskImage:
-              'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
-          }}
-        />
-
-        {/* Specular gloss reflection down cylinder */}
-        <div
-          className="absolute left-1 top-0 bottom-0 w-0.5 md:w-1 opacity-35 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(to bottom, transparent, rgba(255,255,255,0.5) 15%, rgba(255,255,255,0.5) 85%, transparent)',
-          }}
-        />
-      </div>
-
-      {/* Top spool cap */}
+      />
+      {/* Bottom rim shade */}
       <div
-        className="absolute -top-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
+        className="absolute bottom-0 left-0 right-0 h-1.5 pointer-events-none z-20"
         style={{
-          background: 'radial-gradient(ellipse at center, #38342f 0%, #100f0e 100%)',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 100%)',
         }}
       />
 
-      {/* Bottom spool cap */}
+      {/* Animated unrolling acetate striations (moving outward to right) */}
       <div
-        className="absolute -bottom-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
+        className={`absolute inset-0 film-roll-stripes ${animClass}`}
         style={{
-          background: 'radial-gradient(ellipse at center, #38342f 0%, #100f0e 100%)',
+          maskImage:
+            'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
+        }}
+      />
+
+      {/* Subtle cylindrical gloss highlight */}
+      <div
+        className="absolute left-1 top-0 bottom-0 w-0.5 opacity-30 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent, rgba(255,255,255,0.45) 20%, rgba(255,255,255,0.45) 80%, transparent)',
         }}
       />
     </div>
@@ -76,58 +72,54 @@ const LeftFilmRoll: React.FC<{ animState: ScrollDirection }> = ({ animState }) =
 const RightFilmRoll: React.FC<{ animState: ScrollDirection }> = ({ animState }) => {
   const animClass =
     animState === 'paused'
-      ? 'film-roll-anim-paused'
+      ? 'film-roll-right-paused'
       : animState === 'backward'
-      ? 'film-roll-anim-backward'
-      : 'film-roll-anim-forward';
+      ? 'film-roll-right-backward'
+      : 'film-roll-right-forward';
 
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-3.5 md:w-4.5 pointer-events-none z-10 select-none">
-      {/* 3D cylindrical roll body */}
+    <div
+      className="absolute right-0 top-0 bottom-0 w-3 md:w-3.5 pointer-events-none z-10 select-none overflow-hidden rounded-r-sm"
+      style={{
+        background:
+          'linear-gradient(90deg, rgba(14,13,12,0.96) 0%, rgba(28,25,23,0.92) 25%, rgba(56,51,45,0.86) 50%, rgba(30,27,24,0.92) 75%, rgba(14,13,12,0.96) 100%)',
+        boxShadow: '-2px 0 8px -1px rgba(0,0,0,0.35), -1px 0 3px rgba(0,0,0,0.25)',
+        borderLeft: '1px solid rgba(255,255,255,0.07)',
+      }}
+      aria-hidden="true"
+    >
+      {/* Top rim shade */}
       <div
-        className="relative w-full h-full overflow-hidden"
+        className="absolute top-0 left-0 right-0 h-1.5 pointer-events-none z-20"
         style={{
-          background:
-            'linear-gradient(90deg, #100f0e 0%, #201e1b 22%, #3d3933 50%, #22201c 78%, #0e0d0c 100%)',
-          boxShadow: '-3px 0 10px rgba(0,0,0,0.45)',
-          borderLeft: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '0 2px 2px 0',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 100%)',
         }}
-      >
-        {/* Animated unrolling film layer striations */}
-        <div
-          className={`absolute inset-0 film-roll-stripes ${animClass}`}
-          style={{
-            maskImage:
-              'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
-            WebkitMaskImage:
-              'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
-          }}
-        />
-
-        {/* Specular gloss reflection down cylinder */}
-        <div
-          className="absolute right-1 top-0 bottom-0 w-0.5 md:w-1 opacity-35 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(to bottom, transparent, rgba(255,255,255,0.5) 15%, rgba(255,255,255,0.5) 85%, transparent)',
-          }}
-        />
-      </div>
-
-      {/* Top spool cap */}
+      />
+      {/* Bottom rim shade */}
       <div
-        className="absolute -top-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
+        className="absolute bottom-0 left-0 right-0 h-1.5 pointer-events-none z-20"
         style={{
-          background: 'radial-gradient(ellipse at center, #38342f 0%, #100f0e 100%)',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 100%)',
         }}
       />
 
-      {/* Bottom spool cap */}
+      {/* Animated unrolling acetate striations (moving inward/opposite direction) */}
       <div
-        className="absolute -bottom-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
+        className={`absolute inset-0 film-roll-stripes ${animClass}`}
         style={{
-          background: 'radial-gradient(ellipse at center, #38342f 0%, #100f0e 100%)',
+          maskImage:
+            'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(90deg, transparent 0%, black 20%, black 80%, transparent 100%)',
+        }}
+      />
+
+      {/* Subtle cylindrical gloss highlight */}
+      <div
+        className="absolute right-1 top-0 bottom-0 w-0.5 opacity-30 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent, rgba(255,255,255,0.45) 20%, rgba(255,255,255,0.45) 80%, transparent)',
         }}
       />
     </div>
@@ -349,21 +341,39 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           display: none;
         }
 
-        @keyframes rollForward {
+        /* Left roll: unspooling film toward the right */
+        @keyframes rollLeftForward {
           0% {
             background-position-x: 0px;
           }
           100% {
-            background-position-x: 32px;
+            background-position-x: 28px;
+          }
+        }
+        @keyframes rollLeftBackward {
+          0% {
+            background-position-x: 28px;
+          }
+          100% {
+            background-position-x: 0px;
           }
         }
 
-        @keyframes rollBackward {
+        /* Right roll: taking up incoming film from the left (opposite phase/direction) */
+        @keyframes rollRightForward {
           0% {
-            background-position-x: 32px;
+            background-position-x: 28px;
           }
           100% {
             background-position-x: 0px;
+          }
+        }
+        @keyframes rollRightBackward {
+          0% {
+            background-position-x: 0px;
+          }
+          100% {
+            background-position-x: 28px;
           }
         }
 
@@ -371,25 +381,35 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           background-image: repeating-linear-gradient(
             90deg,
             transparent 0px,
-            rgba(255, 255, 255, 0.04) 4px,
-            rgba(255, 255, 255, 0.16) 9px,
-            rgba(255, 255, 255, 0.04) 14px,
+            transparent 6px,
+            rgba(255, 255, 255, 0.02) 8px,
+            rgba(255, 255, 255, 0.08) 12px,
+            rgba(255, 255, 255, 0.02) 16px,
             transparent 18px,
-            transparent 32px
+            transparent 28px
           );
-          background-size: 32px 100%;
+          background-size: 28px 100%;
         }
 
-        .film-roll-anim-forward {
-          animation: rollForward 1.6s linear infinite;
+        .film-roll-left-forward {
+          animation: rollLeftForward 1.8s linear infinite;
+        }
+        .film-roll-left-backward {
+          animation: rollLeftBackward 0.6s linear infinite;
+        }
+        .film-roll-left-paused {
+          animation: rollLeftForward 1.8s linear infinite;
+          animation-play-state: paused;
         }
 
-        .film-roll-anim-backward {
-          animation: rollBackward 0.55s linear infinite;
+        .film-roll-right-forward {
+          animation: rollRightForward 1.8s linear infinite;
         }
-
-        .film-roll-anim-paused {
-          animation: rollForward 1.6s linear infinite;
+        .film-roll-right-backward {
+          animation: rollRightBackward 0.6s linear infinite;
+        }
+        .film-roll-right-paused {
+          animation: rollRightForward 1.8s linear infinite;
           animation-play-state: paused;
         }
 
