@@ -11,6 +11,7 @@ import { MainLayout } from './components/MainLayout';
 import { Blog } from './components/Work';
 import { Photography } from './components/Photography';
 import { PhotosPage } from './components/PhotosPage';
+import { PhotosTestPage } from './components/PhotosTestPage';
 import { Resume } from './components/Resume';
 import { SectionDivider } from './components/SectionDivider';
 
@@ -43,6 +44,7 @@ function App() {
               <Route path="blog" element={<BlogHome posts={BLOG_POSTS} />} />
               <Route path="blog/:slug" element={<BlogPageWrapper />} />
               <Route path="photos" element={<PhotosPage />} />
+              <Route path="photos-test" element={<PhotosTestPage />} />
             </Route>
           </Routes>
         </main>
