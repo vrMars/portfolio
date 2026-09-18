@@ -55,7 +55,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     return () => el.removeEventListener('wheel', handleWheel);
   }, []);
 
-  // Auto-scroll loop with pure-math inverted photo wrap-around & whitespace handling
+  // Auto-scroll loop with pure-math inverted wrap-around, circumference delay & whitespace handling
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -91,7 +91,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     el.addEventListener('touchend', resume, { passive: true });
     el.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Pure analytical math for inverted cylinder wrap-around including whitespace gaps
+    // Pure analytical math accounting for cylinder circumference travel and whitespace gaps
     const updateRollProjections = (currentScroll: number) => {
       const h = containerHeightRef.current || 350;
       const w = containerWidthRef.current || 1000;
@@ -100,12 +100,19 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       const padding = 8;
       const rollW = isMob ? 16 : 20;
 
+      // Arc length around the cylinder before emerging onto front: ~ (PI / 2) * rollW
+      const circDelay = Math.PI * 0.5 * rollW;
+
       let curX = padding;
       let leftItem: { photo: Photo; pw: number; d: number } | null = null;
       let rightItem: { photo: Photo; pw: number; u: number } | null = null;
 
-      const leftInner = currentScroll + rollW;
+      // Left roll visible front is delayed by circDelay relative to the inner edge
+      const leftFront = currentScroll + rollW - circDelay;
+
+      // Right roll visible front is advanced by circDelay relative to the inner edge
       const rightInner = currentScroll + w - rollW;
+      const rightFront = rightInner + circDelay;
 
       for (let i = 0; i < photos.length; i++) {
         const p = photos[i];
@@ -113,16 +120,15 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
         const photoStart = curX;
         const photoEnd = curX + pw;
 
-        // Left cylinder: ingesting photos moving right to left.
-        // Once the photo passes under inner edge, it wraps out and over inverted.
-        if (!leftItem && photoStart <= leftInner && photoEnd >= currentScroll) {
-          const d = leftInner - photoStart;
+        // Left cylinder: photo travels under inner edge, around circumference, then wraps over front
+        if (!leftItem && photoStart <= leftFront && photoEnd >= leftFront - rollW) {
+          const d = leftFront - photoStart;
           leftItem = { photo: p, pw, d };
         }
 
-        // Right cylinder: photo is coming over inverted, unrolling normal underneath to left.
-        if (!rightItem && photoStart <= currentScroll + w && photoEnd >= rightInner) {
-          const u = rightInner - photoStart;
+        // Right cylinder: photo feeds over front, wraps under circumference, then enters carousel
+        if (!rightItem && photoStart <= rightFront + rollW && photoEnd >= rightFront) {
+          const u = rightFront - photoStart;
           rightItem = { photo: p, pw, u };
         }
 
@@ -142,7 +148,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
         leftImgRef.current.style.transformOrigin = '0 0';
         leftImgRef.current.style.transform = `translateX(${leftItem.d}px) scaleX(-1)`;
       } else if (leftImgRef.current) {
-        // Gap or empty space: roll shows pure dark opaque cylinder
+        // Circumference delay, gap, or empty space: roll shows pure dark opaque cylinder
         leftImgRef.current.style.display = 'none';
       }
 
@@ -158,7 +164,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
         rightImgRef.current.style.transformOrigin = '0 0';
         rightImgRef.current.style.transform = `translateX(${rightItem.u + rollW}px) scaleX(-1)`;
       } else if (rightImgRef.current) {
-        // Gap or empty space: roll shows pure dark opaque cylinder
+        // Circumference delay, gap, or empty space: roll shows pure dark opaque cylinder
         rightImgRef.current.style.display = 'none';
       }
     };
@@ -364,9 +370,9 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       `}</style>
 
       <div ref={galleryRef} className="relative">
-        {/* Left Roll: Ingesting photos right-to-left, wrapping out & over inverted */}
+        {/* Left Roll: Ingesting photos right-to-left, wrapping around circumference, emerging out & over inverted */}
         <div
-          className="absolute left-0 top-0 bottom-0 w-3.5 md:w-4 pointer-events-none z-10 select-none overflow-hidden rounded-l-sm"
+          className="absolute left-0 top-0 bottom-0 w-4 md:w-5 pointer-events-none z-10 select-none overflow-hidden rounded-l-sm"
           style={{
             backgroundColor: '#0e0d0c',
             boxShadow: '2px 0 8px -1px rgba(0,0,0,0.35), 1px 0 3px rgba(0,0,0,0.25)',
@@ -405,9 +411,9 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           />
         </div>
 
-        {/* Right Roll: Photo coming over inverted, unrolling normal underneath */}
+        {/* Right Roll: Photo coming over inverted, wrapping around circumference, unrolling normal underneath */}
         <div
-          className="absolute right-0 top-0 bottom-0 w-3.5 md:w-4 pointer-events-none z-10 select-none overflow-hidden rounded-r-sm"
+          className="absolute right-0 top-0 bottom-0 w-4 md:w-5 pointer-events-none z-10 select-none overflow-hidden rounded-r-sm"
           style={{
             backgroundColor: '#0e0d0c',
             boxShadow: '-2px 0 8px -1px rgba(0,0,0,0.35), -1px 0 3px rgba(0,0,0,0.25)',
