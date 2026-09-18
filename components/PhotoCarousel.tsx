@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import PhotoSwipe from 'photoswipe';
 import 'photoswipe/style.css';
@@ -13,11 +13,11 @@ interface PhotoCarouselProps {
 export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   photos,
   galleryId = 'photo-carousel',
-  fadeBgColor = '#F4F3EE',
 }) => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lightboxRef = useRef<PhotoSwipeLightbox | null>(null);
+  const isLightboxOpenRef = useRef(false);
 
   // Horizontal scroll with mouse wheel
   useEffect(() => {
@@ -35,6 +35,79 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     return () => el.removeEventListener('wheel', handleWheel);
   }, []);
 
+  // Auto-scroll through the carousel slowly
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let isPaused = false;
+    let isResetting = false;
+    let animId: number;
+    let lastTime = performance.now();
+    let scrollPos = el.scrollLeft;
+    const speed = 30; // pixels per second
+
+    const pause = () => {
+      isPaused = true;
+      scrollPos = el.scrollLeft;
+    };
+    const resume = () => {
+      scrollPos = el.scrollLeft;
+      lastTime = performance.now();
+      isPaused = false;
+    };
+
+    const handleScroll = () => {
+      if (isPaused) {
+        scrollPos = el.scrollLeft;
+      }
+    };
+
+    el.addEventListener('mouseenter', pause);
+    el.addEventListener('mouseleave', resume);
+    el.addEventListener('touchstart', pause, { passive: true });
+    el.addEventListener('touchend', resume, { passive: true });
+    el.addEventListener('scroll', handleScroll, { passive: true });
+
+    const step = (now: number) => {
+      const dt = Math.min((now - lastTime) / 1000, 0.1); // clamp dt in case of tab freeze
+      lastTime = now;
+
+      if (!isPaused && !isResetting && !isLightboxOpenRef.current && el) {
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        if (maxScroll > 1) {
+          if (scrollPos >= maxScroll - 1) {
+            isResetting = true;
+            setTimeout(() => {
+              el.scrollTo({ left: 0, behavior: 'smooth' });
+              setTimeout(() => {
+                scrollPos = 0;
+                lastTime = performance.now();
+                isResetting = false;
+              }, 1200);
+            }, 2000);
+          } else {
+            scrollPos += speed * dt;
+            el.scrollLeft = scrollPos;
+          }
+        }
+      }
+
+      animId = requestAnimationFrame(step);
+    };
+
+    animId = requestAnimationFrame(step);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      el.removeEventListener('mouseenter', pause);
+      el.removeEventListener('mouseleave', resume);
+      el.removeEventListener('touchstart', pause);
+      el.removeEventListener('touchend', resume);
+      el.removeEventListener('scroll', handleScroll);
+    };
+  }, [photos]);
+
   // PhotoSwipe lightbox
   useEffect(() => {
     if (!galleryRef.current) return;
@@ -49,6 +122,14 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       initialZoomLevel: 'fit',
       secondaryZoomLevel: 1.5,
       maxZoomLevel: 2,
+    });
+
+    lightbox.on('beforeOpen', () => {
+      isLightboxOpenRef.current = true;
+    });
+
+    lightbox.on('close', () => {
+      isLightboxOpenRef.current = false;
     });
 
     lightbox.on('uiRegister', function () {
@@ -187,27 +268,11 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       `}</style>
 
       <div ref={galleryRef} className="relative">
-        {/* Right edge fade */}
-        <div
-          className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
-          style={{
-            background: `linear-gradient(to left, ${fadeBgColor}, transparent)`,
-          }}
-        />
-        {/* Left edge fade */}
-        <div
-          className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
-          style={{
-            background: `linear-gradient(to right, ${fadeBgColor}, transparent)`,
-          }}
-        />
-
         <div
           ref={scrollRef}
           id={galleryId}
-          className="carousel-scroll flex gap-3 md:gap-4 overflow-x-auto overflow-y-hidden pl-2 pr-16"
+          className="carousel-scroll flex gap-3 md:gap-4 overflow-x-auto overflow-y-hidden px-2"
           style={{
-            scrollSnapType: 'x mandatory',
             height: 'clamp(280px, 35vw, 400px)',
           }}
         >
@@ -220,7 +285,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
               data-index={index}
               className="gallery-item gallery-image flex-shrink-0 rounded-sm overflow-hidden group cursor-pointer"
               style={{
-                scrollSnapAlign: 'start',
                 height: '100%',
                 aspectRatio: `${photo.width} / ${photo.height}`,
               }}
