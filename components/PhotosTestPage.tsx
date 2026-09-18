@@ -401,10 +401,11 @@ export const PhotosTestPage: React.FC = () => {
                   return (
                     <div
                       key={item.id}
-                      className="inline-grid-item flex-shrink-0 flex flex-col justify-between p-5 md:p-6 bg-[#EAE8E1] border border-[#D4D1C9] select-none"
+                      className="inline-grid-item flex-shrink-0 flex flex-col justify-between p-4 sm:p-5 md:p-6 bg-[#EAE8E1] border border-[#D4D1C9] select-none"
                       style={{
-                        flexGrow: 0.78,
-                        flexBasis: "calc(var(--row-h) * 0.78)",
+                        flexGrow: 0.85,
+                        flexBasis: "calc(var(--row-h) * 0.85)",
+                        minWidth: "150px",
                       }}
                     >
                       <div className="flex items-center justify-between">
@@ -415,10 +416,10 @@ export const PhotosTestPage: React.FC = () => {
                       </div>
 
                       <div className="my-auto py-2">
-                        <span className="block font-serif font-extrabold text-2xl sm:text-3xl md:text-4xl text-black tracking-tight leading-none">
+                        <span className="block font-serif font-extrabold text-xl sm:text-2xl md:text-3xl text-black tracking-tight leading-none">
                           {item.month}
                         </span>
-                        <span className="block font-serif font-bold text-lg sm:text-xl text-neutral-600 tracking-tight mt-1">
+                        <span className="block font-serif font-bold text-base sm:text-lg md:text-xl text-neutral-600 tracking-tight mt-1">
                           {item.year}
                         </span>
                       </div>
@@ -434,10 +435,11 @@ export const PhotosTestPage: React.FC = () => {
                   return (
                     <div
                       key={item.id}
-                      className="inline-grid-item flex-shrink-0 flex flex-col justify-between p-5 md:p-6 bg-[#161514] border border-white/10 select-none text-white"
+                      className="inline-grid-item flex-shrink-0 flex flex-col justify-between p-4 sm:p-5 md:p-6 bg-[#161514] border border-white/10 select-none text-white"
                       style={{
-                        flexGrow: 0.78,
-                        flexBasis: "calc(var(--row-h) * 0.78)",
+                        flexGrow: 0.85,
+                        flexBasis: "calc(var(--row-h) * 0.85)",
+                        minWidth: "150px",
                       }}
                     >
                       <div className="flex items-center justify-between">
@@ -448,10 +450,10 @@ export const PhotosTestPage: React.FC = () => {
                       </div>
 
                       <div className="my-auto py-2">
-                        <span className="block font-serif font-extrabold text-2xl sm:text-3xl md:text-4xl text-white tracking-tight leading-none">
+                        <span className="block font-serif font-extrabold text-xl sm:text-2xl md:text-3xl text-white tracking-tight leading-none">
                           {item.month}
                         </span>
-                        <span className="block font-serif font-bold text-lg sm:text-xl text-neutral-400 tracking-tight mt-1">
+                        <span className="block font-serif font-bold text-base sm:text-lg md:text-xl text-neutral-400 tracking-tight mt-1">
                           {item.year}
                         </span>
                       </div>
@@ -467,10 +469,11 @@ export const PhotosTestPage: React.FC = () => {
                   return (
                     <div
                       key={item.id}
-                      className="inline-grid-item flex-shrink-0 flex flex-col justify-between p-5 md:p-6 bg-transparent border-2 border-black/80 select-none"
+                      className="inline-grid-item flex-shrink-0 flex flex-col justify-between p-4 sm:p-5 md:p-6 bg-transparent border-2 border-black/80 select-none"
                       style={{
-                        flexGrow: 0.78,
-                        flexBasis: "calc(var(--row-h) * 0.78)",
+                        flexGrow: 0.85,
+                        flexBasis: "calc(var(--row-h) * 0.85)",
+                        minWidth: "150px",
                       }}
                     >
                       <div className="flex items-center justify-between">
@@ -481,10 +484,10 @@ export const PhotosTestPage: React.FC = () => {
                       </div>
 
                       <div className="my-auto py-2">
-                        <span className="block font-serif font-extrabold text-2xl sm:text-3xl md:text-4xl text-black tracking-tight leading-none">
+                        <span className="block font-serif font-extrabold text-xl sm:text-2xl md:text-3xl text-black tracking-tight leading-none">
                           {item.month}
                         </span>
-                        <span className="block font-serif font-bold text-lg sm:text-xl text-neutral-700 tracking-tight mt-1">
+                        <span className="block font-serif font-bold text-base sm:text-lg md:text-xl text-neutral-700 tracking-tight mt-1">
                           {item.year}
                         </span>
                       </div>
