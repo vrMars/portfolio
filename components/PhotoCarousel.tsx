@@ -19,13 +19,13 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   const lightboxRef = useRef<PhotoSwipeLightbox | null>(null);
   const isLightboxOpenRef = useRef(false);
 
-  // References for direct, zero-overhead DOM transforms
+  // References for direct GPU transforms with zero React re-render overhead
   const leftImgRef = useRef<HTMLImageElement>(null);
   const rightImgRef = useRef<HTMLImageElement>(null);
   const containerHeightRef = useRef<number>(350);
   const containerWidthRef = useRef<number>(1000);
 
-  // Measure carousel dimensions on mount and resize using zero-overhead listener
+  // Measure carousel dimensions on mount and resize
   useEffect(() => {
     const updateDimensions = () => {
       if (scrollRef.current) {
@@ -55,7 +55,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     return () => el.removeEventListener('wheel', handleWheel);
   }, []);
 
-  // Auto-scroll loop with pure-math cylindrical photo wrap-around projection
+  // Auto-scroll loop with pure-math inverted photo wrap-around & whitespace handling
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -91,7 +91,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     el.addEventListener('touchend', resume, { passive: true });
     el.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Pure math function to project active photos onto left & right cylinders
+    // Pure analytical math for inverted cylinder wrap-around including whitespace gaps
     const updateRollProjections = (currentScroll: number) => {
       const h = containerHeightRef.current || 350;
       const w = containerWidthRef.current || 1000;
@@ -101,56 +101,64 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       const rollW = isMob ? 16 : 20;
 
       let curX = padding;
-      let leftFound = false;
-      let rightFound = false;
-      const rightEdge = currentScroll + w;
-      const rightRollStart = rightEdge - rollW;
+      let leftItem: { photo: Photo; pw: number; d: number } | null = null;
+      let rightItem: { photo: Photo; pw: number; u: number } | null = null;
+
+      const leftInner = currentScroll + rollW;
+      const rightInner = currentScroll + w - rollW;
 
       for (let i = 0; i < photos.length; i++) {
         const p = photos[i];
         const pw = h * (p.width / p.height);
-        const pr = curX + pw;
+        const photoStart = curX;
+        const photoEnd = curX + pw;
 
-        // Left roll projection
-        if (!leftFound && curX <= currentScroll + rollW && pr >= currentScroll) {
-          leftFound = true;
-          const offset = currentScroll - curX;
-          if (leftImgRef.current) {
-            const src = p.thumb || p.src;
-            if (leftImgRef.current.dataset.src !== src) {
-              leftImgRef.current.src = src;
-              leftImgRef.current.dataset.src = src;
-            }
-            leftImgRef.current.style.display = 'block';
-            leftImgRef.current.style.width = `${pw}px`;
-            leftImgRef.current.style.transform = `translateX(-${offset}px) scaleX(0.92)`;
-          }
+        // Left cylinder: ingesting photos moving right to left.
+        // Once the photo passes under inner edge, it wraps out and over inverted.
+        if (!leftItem && photoStart <= leftInner && photoEnd >= currentScroll) {
+          const d = leftInner - photoStart;
+          leftItem = { photo: p, pw, d };
         }
 
-        // Right roll projection
-        if (!rightFound && curX <= rightEdge && pr >= rightRollStart) {
-          rightFound = true;
-          const offset = curX - rightRollStart;
-          if (rightImgRef.current) {
-            const src = p.thumb || p.src;
-            if (rightImgRef.current.dataset.src !== src) {
-              rightImgRef.current.src = src;
-              rightImgRef.current.dataset.src = src;
-            }
-            rightImgRef.current.style.display = 'block';
-            rightImgRef.current.style.width = `${pw}px`;
-            rightImgRef.current.style.transform = `translateX(${offset}px) scaleX(0.92)`;
-          }
+        // Right cylinder: photo is coming over inverted, unrolling normal underneath to left.
+        if (!rightItem && photoStart <= currentScroll + w && photoEnd >= rightInner) {
+          const u = rightInner - photoStart;
+          rightItem = { photo: p, pw, u };
         }
 
-        curX = pr + gap;
-        if (leftFound && rightFound) break;
+        curX = photoEnd + gap; // Whitespace gap explicitly accounted for
+        if (leftItem && rightItem) break;
       }
 
-      if (!leftFound && leftImgRef.current) {
+      // Left roll: photo wraps out and over inverted (scaleX(-1))
+      if (leftItem && leftImgRef.current) {
+        const src = leftItem.photo.thumb || leftItem.photo.src;
+        if (leftImgRef.current.dataset.src !== src) {
+          leftImgRef.current.src = src;
+          leftImgRef.current.dataset.src = src;
+        }
+        leftImgRef.current.style.display = 'block';
+        leftImgRef.current.style.width = `${leftItem.pw}px`;
+        leftImgRef.current.style.transformOrigin = '0 0';
+        leftImgRef.current.style.transform = `translateX(${leftItem.d}px) scaleX(-1)`;
+      } else if (leftImgRef.current) {
+        // Gap or empty space: roll shows pure dark opaque cylinder
         leftImgRef.current.style.display = 'none';
       }
-      if (!rightFound && rightImgRef.current) {
+
+      // Right roll: photo is inverted over roll, unrolling normal into carousel
+      if (rightItem && rightImgRef.current) {
+        const src = rightItem.photo.thumb || rightItem.photo.src;
+        if (rightImgRef.current.dataset.src !== src) {
+          rightImgRef.current.src = src;
+          rightImgRef.current.dataset.src = src;
+        }
+        rightImgRef.current.style.display = 'block';
+        rightImgRef.current.style.width = `${rightItem.pw}px`;
+        rightImgRef.current.style.transformOrigin = '0 0';
+        rightImgRef.current.style.transform = `translateX(${rightItem.u + rollW}px) scaleX(-1)`;
+      } else if (rightImgRef.current) {
+        // Gap or empty space: roll shows pure dark opaque cylinder
         rightImgRef.current.style.display = 'none';
       }
     };
@@ -356,7 +364,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       `}</style>
 
       <div ref={galleryRef} className="relative">
-        {/* Left Film Roll Cylinder with pure-math wrap-around projection */}
+        {/* Left Roll: Ingesting photos right-to-left, wrapping out & over inverted */}
         <div
           className="absolute left-0 top-0 bottom-0 w-3.5 md:w-4 pointer-events-none z-10 select-none overflow-hidden rounded-l-sm"
           style={{
@@ -366,14 +374,13 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           }}
           aria-hidden="true"
         >
-          {/* Dimmed wrap-around projected photo slice */}
+          {/* Dimmed wrap-around inverted photo slice */}
           <img
             ref={leftImgRef}
             alt=""
             className="absolute top-0 bottom-0 h-full object-cover max-w-none pointer-events-none"
             style={{
               display: 'none',
-              transformOrigin: 'left center',
               opacity: 0.38,
               filter: 'contrast(1.1) brightness(0.85)',
             }}
@@ -398,7 +405,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           />
         </div>
 
-        {/* Right Film Roll Cylinder with pure-math wrap-around projection */}
+        {/* Right Roll: Photo coming over inverted, unrolling normal underneath */}
         <div
           className="absolute right-0 top-0 bottom-0 w-3.5 md:w-4 pointer-events-none z-10 select-none overflow-hidden rounded-r-sm"
           style={{
@@ -408,14 +415,13 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           }}
           aria-hidden="true"
         >
-          {/* Dimmed wrap-around projected photo slice */}
+          {/* Dimmed wrap-around inverted photo slice */}
           <img
             ref={rightImgRef}
             alt=""
             className="absolute top-0 bottom-0 h-full object-cover max-w-none pointer-events-none"
             style={{
               display: 'none',
-              transformOrigin: 'right center',
               opacity: 0.38,
               filter: 'contrast(1.1) brightness(0.85)',
             }}
