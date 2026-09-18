@@ -31,10 +31,9 @@ type StreamItem =
   | {
       type: "date";
       id: string;
-      label: string;
       month: string;
+      monthTitle: string;
       year: string;
-      count: number;
     }
   | {
       type: "photo";
@@ -72,10 +71,9 @@ function buildPhotoStream(photos: PhotoWithTimestamp[]): StreamItem[] {
     items.push({
       type: "date",
       id: `date-${grp.monthYear.replace(/\s+/g, "-")}`,
-      label: grp.monthYear.toUpperCase(),
       month: grp.month.toUpperCase(),
+      monthTitle: grp.month,
       year: grp.year,
-      count: grp.photos.length,
     });
     grp.photos.forEach((photo) => {
       items.push({
@@ -92,9 +90,8 @@ function buildPhotoStream(photos: PhotoWithTimestamp[]): StreamItem[] {
 export const PhotosTestPage: React.FC = () => {
   const { photos, loading, error } = usePhotos();
   const galleryRef = useRef<HTMLDivElement>(null);
-  const [tileStyle, setTileStyle] = useState<"editorial" | "dark" | "minimal">(
-    "editorial"
-  );
+  const [casing, setCasing] = useState<"uppercase" | "title">("uppercase");
+  const [alignment, setAlignment] = useState<"left" | "center">("left");
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -334,42 +331,57 @@ export const PhotosTestPage: React.FC = () => {
               Photography
             </h1>
             <p className="text-xs font-sans uppercase tracking-[0.2em] text-warm-gray mt-2">
-              Inline Grid Preview &bull; {allPhotos.length} Photos &bull; Integrated Month/Year
+              Inline Grid Preview &bull; {allPhotos.length} Photos &bull; Pure Text Month + Date
             </p>
           </div>
 
-          {/* Style variation picker */}
-          <div className="flex items-center gap-1.5 p-1 bg-neutral-200/60 rounded-md text-xs font-medium self-start md:self-auto">
-            <button
-              onClick={() => setTileStyle("editorial")}
-              className={`px-3 py-1.5 rounded transition-all ${
-                tileStyle === "editorial"
-                  ? "bg-white text-black shadow-sm font-semibold"
-                  : "text-neutral-600 hover:text-black"
-              }`}
-            >
-              Editorial Warm
-            </button>
-            <button
-              onClick={() => setTileStyle("dark")}
-              className={`px-3 py-1.5 rounded transition-all ${
-                tileStyle === "dark"
-                  ? "bg-neutral-900 text-white shadow-sm font-semibold"
-                  : "text-neutral-600 hover:text-black"
-              }`}
-            >
-              Dark Slate
-            </button>
-            <button
-              onClick={() => setTileStyle("minimal")}
-              className={`px-3 py-1.5 rounded transition-all ${
-                tileStyle === "minimal"
-                  ? "bg-white text-black shadow-sm font-semibold"
-                  : "text-neutral-600 hover:text-black"
-              }`}
-            >
-              Clean Frame
-            </button>
+          {/* Controls */}
+          <div className="flex items-center gap-2 text-xs font-medium self-start md:self-auto">
+            <div className="flex items-center gap-1 p-1 bg-neutral-200/60 rounded-md">
+              <button
+                onClick={() => setCasing("uppercase")}
+                className={`px-3 py-1 rounded transition-all ${
+                  casing === "uppercase"
+                    ? "bg-white text-black shadow-sm font-semibold"
+                    : "text-neutral-600 hover:text-black"
+                }`}
+              >
+                UPPERCASE
+              </button>
+              <button
+                onClick={() => setCasing("title")}
+                className={`px-3 py-1 rounded transition-all ${
+                  casing === "title"
+                    ? "bg-white text-black shadow-sm font-semibold"
+                    : "text-neutral-600 hover:text-black"
+                }`}
+              >
+                Title Case
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1 p-1 bg-neutral-200/60 rounded-md">
+              <button
+                onClick={() => setAlignment("left")}
+                className={`px-3 py-1 rounded transition-all ${
+                  alignment === "left"
+                    ? "bg-white text-black shadow-sm font-semibold"
+                    : "text-neutral-600 hover:text-black"
+                }`}
+              >
+                Left
+              </button>
+              <button
+                onClick={() => setAlignment("center")}
+                className={`px-3 py-1 rounded transition-all ${
+                  alignment === "center"
+                    ? "bg-white text-black shadow-sm font-semibold"
+                    : "text-neutral-600 hover:text-black"
+                }`}
+              >
+                Center
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -396,110 +408,28 @@ export const PhotosTestPage: React.FC = () => {
           >
             {streamItems.map((item) => {
               if (item.type === "date") {
-                // Inline Date Tile
-                if (tileStyle === "editorial") {
-                  return (
-                    <div
-                      key={item.id}
-                      className="inline-grid-item flex-shrink-0 flex flex-col justify-between p-4 sm:p-5 md:p-6 bg-[#EAE8E1] border border-[#D4D1C9] select-none"
-                      style={{
-                        flexGrow: 0.85,
-                        flexBasis: "calc(var(--row-h) * 0.85)",
-                        minWidth: "150px",
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-terracotta font-bold">
-                          {item.year}
-                        </span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-terracotta" />
-                      </div>
-
-                      <div className="my-auto py-2">
-                        <span className="block font-serif font-extrabold text-xl sm:text-2xl md:text-3xl text-black tracking-tight leading-none">
-                          {item.month}
-                        </span>
-                        <span className="block font-serif font-bold text-base sm:text-lg md:text-xl text-neutral-600 tracking-tight mt-1">
-                          {item.year}
-                        </span>
-                      </div>
-
-                      <div className="pt-2 border-t border-[#D4D1C9]/80">
-                        <span className="text-[10px] md:text-[11px] font-sans text-neutral-500 tracking-[0.15em] uppercase font-semibold">
-                          {item.count} {item.count === 1 ? "Photo" : "Photos"}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                } else if (tileStyle === "dark") {
-                  return (
-                    <div
-                      key={item.id}
-                      className="inline-grid-item flex-shrink-0 flex flex-col justify-between p-4 sm:p-5 md:p-6 bg-[#161514] border border-white/10 select-none text-white"
-                      style={{
-                        flexGrow: 0.85,
-                        flexBasis: "calc(var(--row-h) * 0.85)",
-                        minWidth: "150px",
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-warm-gray font-bold">
-                          {item.year}
-                        </span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-terracotta" />
-                      </div>
-
-                      <div className="my-auto py-2">
-                        <span className="block font-serif font-extrabold text-xl sm:text-2xl md:text-3xl text-white tracking-tight leading-none">
-                          {item.month}
-                        </span>
-                        <span className="block font-serif font-bold text-base sm:text-lg md:text-xl text-neutral-400 tracking-tight mt-1">
-                          {item.year}
-                        </span>
-                      </div>
-
-                      <div className="pt-2 border-t border-white/10">
-                        <span className="text-[10px] md:text-[11px] font-sans text-neutral-400 tracking-[0.15em] uppercase font-semibold">
-                          {item.count} {item.count === 1 ? "Photo" : "Photos"}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div
-                      key={item.id}
-                      className="inline-grid-item flex-shrink-0 flex flex-col justify-between p-4 sm:p-5 md:p-6 bg-transparent border-2 border-black/80 select-none"
-                      style={{
-                        flexGrow: 0.85,
-                        flexBasis: "calc(var(--row-h) * 0.85)",
-                        minWidth: "150px",
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-neutral-500 font-bold">
-                          {item.year}
-                        </span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-black" />
-                      </div>
-
-                      <div className="my-auto py-2">
-                        <span className="block font-serif font-extrabold text-xl sm:text-2xl md:text-3xl text-black tracking-tight leading-none">
-                          {item.month}
-                        </span>
-                        <span className="block font-serif font-bold text-base sm:text-lg md:text-xl text-neutral-700 tracking-tight mt-1">
-                          {item.year}
-                        </span>
-                      </div>
-
-                      <div className="pt-2 border-t border-neutral-300">
-                        <span className="text-[10px] md:text-[11px] font-sans text-neutral-600 tracking-[0.15em] uppercase font-semibold">
-                          {item.count} {item.count === 1 ? "Photo" : "Photos"}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                }
+                return (
+                  <div
+                    key={item.id}
+                    className={`inline-grid-item flex-shrink-0 flex flex-col justify-center bg-transparent select-none px-5 sm:px-7 md:px-8 ${
+                      alignment === "center"
+                        ? "items-center text-center"
+                        : "items-start text-left"
+                    }`}
+                    style={{
+                      flexGrow: 0.65,
+                      flexBasis: "calc(var(--row-h) * 0.72)",
+                      minWidth: "170px",
+                    }}
+                  >
+                    <span className="block font-serif font-bold text-2xl sm:text-3xl md:text-[34px] text-black tracking-tight leading-none whitespace-nowrap">
+                      {casing === "uppercase" ? item.month : item.monthTitle}
+                    </span>
+                    <span className="block font-serif font-bold text-base sm:text-lg md:text-xl text-neutral-500 tracking-tight mt-2 whitespace-nowrap">
+                      {item.year}
+                    </span>
+                  </div>
+                );
               }
 
               // Photo item
