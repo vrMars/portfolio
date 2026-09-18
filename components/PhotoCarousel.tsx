@@ -20,8 +20,12 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   const isLightboxOpenRef = useRef(false);
 
   // References for direct GPU transforms with zero React re-render overhead
-  const leftImgRef = useRef<HTMLImageElement>(null);
-  const rightImgRef = useRef<HTMLImageElement>(null);
+  const leftImg1Ref = useRef<HTMLImageElement>(null);
+  const leftImg2Ref = useRef<HTMLImageElement>(null);
+  const leftGapRef = useRef<HTMLDivElement>(null);
+  const rightImg1Ref = useRef<HTMLImageElement>(null);
+  const rightImg2Ref = useRef<HTMLImageElement>(null);
+  const rightGapRef = useRef<HTMLDivElement>(null);
   const containerHeightRef = useRef<number>(350);
   const containerWidthRef = useRef<number>(1000);
 
@@ -91,7 +95,25 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     el.addEventListener('touchend', resume, { passive: true });
     el.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Pure analytical math accounting for cylinder circumference travel and whitespace gaps
+    const setImg = (
+      img: HTMLImageElement | null,
+      p: Photo,
+      pw: number,
+      offset: number
+    ) => {
+      if (!img) return;
+      const src = p.thumb || p.src;
+      if (img.dataset.src !== src) {
+        img.src = src;
+        img.dataset.src = src;
+      }
+      img.style.display = 'block';
+      img.style.width = `${pw}px`;
+      img.style.transformOrigin = '0 0';
+      img.style.transform = `translateX(${offset}px) scaleX(-1)`;
+    };
+
+    // Pure analytical math accounting for cylinder circumference travel, inverted projection, and dimmed white gaps
     const updateRollProjections = (currentScroll: number) => {
       const h = containerHeightRef.current || 350;
       const w = containerWidthRef.current || 1000;
@@ -103,16 +125,22 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       // Arc length around the cylinder before emerging onto front: ~ (PI / 2) * rollW
       const circDelay = Math.PI * 0.5 * rollW;
 
-      let curX = padding;
-      let leftItem: { photo: Photo; pw: number; d: number } | null = null;
-      let rightItem: { photo: Photo; pw: number; u: number } | null = null;
-
-      // Left roll visible front is delayed by circDelay relative to the inner edge
+      // Left roll visible window in strip coordinates
       const leftFront = currentScroll + rollW - circDelay;
+      const leftSMin = leftFront - rollW;
+      const leftSMax = leftFront;
 
-      // Right roll visible front is advanced by circDelay relative to the inner edge
+      // Right roll visible window in strip coordinates
       const rightInner = currentScroll + w - rollW;
       const rightFront = rightInner + circDelay;
+      const rightSMin = rightFront;
+      const rightSMax = rightFront + rollW;
+
+      let curX = padding;
+      let leftPhotoCount = 0;
+      let rightPhotoCount = 0;
+      let leftGapVisible = false;
+      let rightGapVisible = false;
 
       for (let i = 0; i < photos.length; i++) {
         const p = photos[i];
@@ -120,52 +148,90 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
         const photoStart = curX;
         const photoEnd = curX + pw;
 
-        // Left cylinder: photo travels under inner edge, around circumference, then wraps over front
-        if (!leftItem && photoStart <= leftFront && photoEnd >= leftFront - rollW) {
+        // --- Left cylinder check ---
+        if (photoStart < leftSMax && photoEnd > leftSMin) {
           const d = leftFront - photoStart;
-          leftItem = { photo: p, pw, d };
+          if (leftPhotoCount === 0) {
+            setImg(leftImg1Ref.current, p, pw, d);
+            leftPhotoCount++;
+          } else if (leftPhotoCount === 1) {
+            setImg(leftImg2Ref.current, p, pw, d);
+            leftPhotoCount++;
+          }
         }
 
-        // Right cylinder: photo feeds over front, wraps under circumference, then enters carousel
-        if (!rightItem && photoStart <= rightFront + rollW && photoEnd >= rightFront) {
-          const u = rightFront - photoStart;
-          rightItem = { photo: p, pw, u };
+        // Gap after this photo
+        if (i < photos.length - 1) {
+          const gapStart = photoEnd;
+          const gapEnd = photoEnd + gap;
+          if (gapStart < leftSMax && gapEnd > leftSMin) {
+            const xB = leftFront - gapEnd;
+            const xA = leftFront - gapStart;
+            const visL = Math.max(0, xB);
+            const visR = Math.min(rollW, xA);
+            const gw = visR - visL;
+            if (gw > 0 && leftGapRef.current) {
+              leftGapRef.current.style.display = 'block';
+              leftGapRef.current.style.left = `${visL}px`;
+              leftGapRef.current.style.width = `${gw}px`;
+              leftGapVisible = true;
+            }
+          }
         }
 
-        curX = photoEnd + gap; // Whitespace gap explicitly accounted for
-        if (leftItem && rightItem) break;
+        // --- Right cylinder check ---
+        if (photoStart < rightSMax && photoEnd > rightSMin) {
+          const offset = rightFront - photoStart + rollW;
+          if (rightPhotoCount === 0) {
+            setImg(rightImg1Ref.current, p, pw, offset);
+            rightPhotoCount++;
+          } else if (rightPhotoCount === 1) {
+            setImg(rightImg2Ref.current, p, pw, offset);
+            rightPhotoCount++;
+          }
+        }
+
+        // Gap after this photo
+        if (i < photos.length - 1) {
+          const gapStart = photoEnd;
+          const gapEnd = photoEnd + gap;
+          if (gapStart < rightSMax && gapEnd > rightSMin) {
+            const xB = rightFront + rollW - gapEnd;
+            const xA = rightFront + rollW - gapStart;
+            const visL = Math.max(0, xB);
+            const visR = Math.min(rollW, xA);
+            const gw = visR - visL;
+            if (gw > 0 && rightGapRef.current) {
+              rightGapRef.current.style.display = 'block';
+              rightGapRef.current.style.left = `${visL}px`;
+              rightGapRef.current.style.width = `${gw}px`;
+              rightGapVisible = true;
+            }
+          }
+        }
+
+        curX = photoEnd + gap;
       }
 
-      // Left roll: photo wraps out and over inverted (scaleX(-1))
-      if (leftItem && leftImgRef.current) {
-        const src = leftItem.photo.thumb || leftItem.photo.src;
-        if (leftImgRef.current.dataset.src !== src) {
-          leftImgRef.current.src = src;
-          leftImgRef.current.dataset.src = src;
-        }
-        leftImgRef.current.style.display = 'block';
-        leftImgRef.current.style.width = `${leftItem.pw}px`;
-        leftImgRef.current.style.transformOrigin = '0 0';
-        leftImgRef.current.style.transform = `translateX(${leftItem.d}px) scaleX(-1)`;
-      } else if (leftImgRef.current) {
-        // Circumference delay, gap, or empty space: roll shows pure dark opaque cylinder
-        leftImgRef.current.style.display = 'none';
+      // Hide unneeded slots
+      if (leftPhotoCount === 0 && leftImg1Ref.current) {
+        leftImg1Ref.current.style.display = 'none';
+      }
+      if (leftPhotoCount < 2 && leftImg2Ref.current) {
+        leftImg2Ref.current.style.display = 'none';
+      }
+      if (!leftGapVisible && leftGapRef.current) {
+        leftGapRef.current.style.display = 'none';
       }
 
-      // Right roll: photo is inverted over roll, unrolling normal into carousel
-      if (rightItem && rightImgRef.current) {
-        const src = rightItem.photo.thumb || rightItem.photo.src;
-        if (rightImgRef.current.dataset.src !== src) {
-          rightImgRef.current.src = src;
-          rightImgRef.current.dataset.src = src;
-        }
-        rightImgRef.current.style.display = 'block';
-        rightImgRef.current.style.width = `${rightItem.pw}px`;
-        rightImgRef.current.style.transformOrigin = '0 0';
-        rightImgRef.current.style.transform = `translateX(${rightItem.u + rollW}px) scaleX(-1)`;
-      } else if (rightImgRef.current) {
-        // Circumference delay, gap, or empty space: roll shows pure dark opaque cylinder
-        rightImgRef.current.style.display = 'none';
+      if (rightPhotoCount === 0 && rightImg1Ref.current) {
+        rightImg1Ref.current.style.display = 'none';
+      }
+      if (rightPhotoCount < 2 && rightImg2Ref.current) {
+        rightImg2Ref.current.style.display = 'none';
+      }
+      if (!rightGapVisible && rightGapRef.current) {
+        rightGapRef.current.style.display = 'none';
       }
     };
 
@@ -380,13 +446,35 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           }}
           aria-hidden="true"
         >
-          {/* Dimmed wrap-around inverted photo slice */}
+          {/* Dimmed wrap-around inverted photo slices (supports dual slice during gap transition) */}
           <img
-            ref={leftImgRef}
+            ref={leftImg1Ref}
             alt=""
             className="absolute top-0 bottom-0 h-full object-cover max-w-none pointer-events-none"
             style={{
               display: 'none',
+              opacity: 0.38,
+              filter: 'contrast(1.1) brightness(0.85)',
+            }}
+          />
+          <img
+            ref={leftImg2Ref}
+            alt=""
+            className="absolute top-0 bottom-0 h-full object-cover max-w-none pointer-events-none"
+            style={{
+              display: 'none',
+              opacity: 0.38,
+              filter: 'contrast(1.1) brightness(0.85)',
+            }}
+          />
+
+          {/* Dimmed white gap between photos */}
+          <div
+            ref={leftGapRef}
+            className="absolute top-0 bottom-0 pointer-events-none"
+            style={{
+              display: 'none',
+              backgroundColor: '#FAF8F5',
               opacity: 0.38,
               filter: 'contrast(1.1) brightness(0.85)',
             }}
@@ -421,13 +509,35 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
           }}
           aria-hidden="true"
         >
-          {/* Dimmed wrap-around inverted photo slice */}
+          {/* Dimmed wrap-around inverted photo slices (supports dual slice during gap transition) */}
           <img
-            ref={rightImgRef}
+            ref={rightImg1Ref}
             alt=""
             className="absolute top-0 bottom-0 h-full object-cover max-w-none pointer-events-none"
             style={{
               display: 'none',
+              opacity: 0.38,
+              filter: 'contrast(1.1) brightness(0.85)',
+            }}
+          />
+          <img
+            ref={rightImg2Ref}
+            alt=""
+            className="absolute top-0 bottom-0 h-full object-cover max-w-none pointer-events-none"
+            style={{
+              display: 'none',
+              opacity: 0.38,
+              filter: 'contrast(1.1) brightness(0.85)',
+            }}
+          />
+
+          {/* Dimmed white gap between photos */}
+          <div
+            ref={rightGapRef}
+            className="absolute top-0 bottom-0 pointer-events-none"
+            style={{
+              display: 'none',
+              backgroundColor: '#FAF8F5',
               opacity: 0.38,
               filter: 'contrast(1.1) brightness(0.85)',
             }}
