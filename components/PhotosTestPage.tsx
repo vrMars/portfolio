@@ -411,18 +411,18 @@ export const PhotosTestPage: React.FC = () => {
                 return (
                   <div
                     key={item.id}
-                    className={`inline-grid-item flex-shrink-0 flex flex-col justify-center bg-transparent select-none px-5 sm:px-7 md:px-8 ${
+                    className={`inline-grid-item flex-shrink-0 flex flex-col justify-center bg-transparent select-none px-4 sm:px-6 md:px-8 ${
                       alignment === "center"
                         ? "items-center text-center"
                         : "items-start text-left"
                     }`}
                     style={{
-                      flexGrow: 0.65,
-                      flexBasis: "calc(var(--row-h) * 0.72)",
-                      minWidth: "170px",
+                      flexGrow: 0.72,
+                      flexBasis: "calc(var(--row-h) * 0.8)",
+                      minWidth: "200px",
                     }}
                   >
-                    <span className="block font-serif font-bold text-2xl sm:text-3xl md:text-[34px] text-black tracking-tight leading-none whitespace-nowrap">
+                    <span className="block font-serif font-bold text-xl sm:text-2xl md:text-[28px] text-black tracking-tight leading-none whitespace-nowrap">
                       {casing === "uppercase" ? item.month : item.monthTitle}
                     </span>
                     <span className="block font-serif font-bold text-base sm:text-lg md:text-xl text-neutral-500 tracking-tight mt-2 whitespace-nowrap">
