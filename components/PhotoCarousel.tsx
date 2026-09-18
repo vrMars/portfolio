@@ -10,9 +10,184 @@ interface PhotoCarouselProps {
   fadeBgColor?: string;
 }
 
+const LeftFilmEdge: React.FC<{ bgColor?: string }> = ({ bgColor = '#F4F3EE' }) => (
+  <div className="absolute left-0 top-0 bottom-0 w-20 md:w-28 pointer-events-none z-10 select-none overflow-hidden">
+    {/* Top sprocket rail fading into the photo flow */}
+    <div
+      className="absolute top-0 left-0 right-0 h-6 flex items-center pl-4 pr-1 gap-2"
+      style={{
+        background:
+          'linear-gradient(to right, rgba(20, 18, 16, 0.85) 0%, rgba(20, 18, 16, 0.6) 40%, rgba(20, 18, 16, 0.2) 75%, transparent 100%)',
+      }}
+    >
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
+        style={{ backgroundColor: bgColor }}
+      />
+      <span className="text-[6px] tracking-widest text-[#E0DDD5]/60 font-mono">24A</span>
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
+        style={{ backgroundColor: bgColor }}
+      />
+      <span className="text-[6px] tracking-widest text-[#E0DDD5]/40 font-mono">▶</span>
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner opacity-70"
+        style={{ backgroundColor: bgColor }}
+      />
+    </div>
+
+    {/* Bottom sprocket rail fading into the photo flow */}
+    <div
+      className="absolute bottom-0 left-0 right-0 h-6 flex items-center pl-4 pr-1 gap-2"
+      style={{
+        background:
+          'linear-gradient(to right, rgba(20, 18, 16, 0.85) 0%, rgba(20, 18, 16, 0.6) 40%, rgba(20, 18, 16, 0.2) 75%, transparent 100%)',
+      }}
+    >
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
+        style={{ backgroundColor: bgColor }}
+      />
+      <span className="text-[6px] tracking-widest text-[#E0DDD5]/60 font-mono">KODAK</span>
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
+        style={{ backgroundColor: bgColor }}
+      />
+      <span className="text-[6px] tracking-widest text-[#E0DDD5]/40 font-mono">400</span>
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner opacity-70"
+        style={{ backgroundColor: bgColor }}
+      />
+    </div>
+
+    {/* Film roll / canister spool cylinder on far left edge */}
+    <div
+      className="absolute left-0 top-0 bottom-0 w-3.5 md:w-4"
+      style={{
+        background:
+          'linear-gradient(90deg, #100f0e 0%, #25221e 22%, #3d3934 45%, #221f1c 70%, #100f0e 100%)',
+        boxShadow: '3px 0 10px rgba(0,0,0,0.4)',
+        borderRight: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: '2px 0 0 2px',
+      }}
+    >
+      {/* Top curled spool cap */}
+      <div
+        className="absolute -top-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
+        style={{
+          background: 'radial-gradient(ellipse at center, #35312c 0%, #100f0e 100%)',
+        }}
+      />
+      {/* Bottom curled spool cap */}
+      <div
+        className="absolute -bottom-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
+        style={{
+          background: 'radial-gradient(ellipse at center, #35312c 0%, #100f0e 100%)',
+        }}
+      />
+      {/* Cylindrical gloss reflection */}
+      <div
+        className="absolute left-1 top-0 bottom-0 w-0.5 opacity-35"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0.6) 80%, transparent)',
+        }}
+      />
+    </div>
+  </div>
+);
+
+const RightFilmEdge: React.FC<{ bgColor?: string }> = ({ bgColor = '#F4F3EE' }) => (
+  <div className="absolute right-0 top-0 bottom-0 w-20 md:w-28 pointer-events-none z-10 select-none overflow-hidden">
+    {/* Top sprocket rail fading into the photo flow */}
+    <div
+      className="absolute top-0 left-0 right-0 h-6 flex items-center justify-end pr-4 pl-1 gap-2"
+      style={{
+        background:
+          'linear-gradient(to left, rgba(20, 18, 16, 0.85) 0%, rgba(20, 18, 16, 0.6) 40%, rgba(20, 18, 16, 0.2) 75%, transparent 100%)',
+      }}
+    >
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner opacity-70"
+        style={{ backgroundColor: bgColor }}
+      />
+      <span className="text-[6px] tracking-widest text-[#E0DDD5]/40 font-mono">◀</span>
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
+        style={{ backgroundColor: bgColor }}
+      />
+      <span className="text-[6px] tracking-widest text-[#E0DDD5]/60 font-mono">25</span>
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
+        style={{ backgroundColor: bgColor }}
+      />
+    </div>
+
+    {/* Bottom sprocket rail fading into the photo flow */}
+    <div
+      className="absolute bottom-0 left-0 right-0 h-6 flex items-center justify-end pr-4 pl-1 gap-2"
+      style={{
+        background:
+          'linear-gradient(to left, rgba(20, 18, 16, 0.85) 0%, rgba(20, 18, 16, 0.6) 40%, rgba(20, 18, 16, 0.2) 75%, transparent 100%)',
+      }}
+    >
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner opacity-70"
+        style={{ backgroundColor: bgColor }}
+      />
+      <span className="text-[6px] tracking-widest text-[#E0DDD5]/40 font-mono">ISO</span>
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
+        style={{ backgroundColor: bgColor }}
+      />
+      <span className="text-[6px] tracking-widest text-[#E0DDD5]/60 font-mono">SAFETY</span>
+      <div
+        className="w-2 h-3 rounded-[2px] flex-shrink-0 shadow-inner"
+        style={{ backgroundColor: bgColor }}
+      />
+    </div>
+
+    {/* Film roll / canister spool cylinder on far right edge */}
+    <div
+      className="absolute right-0 top-0 bottom-0 w-3.5 md:w-4"
+      style={{
+        background:
+          'linear-gradient(90deg, #100f0e 0%, #221f1c 22%, #3d3934 48%, #25221e 72%, #100f0e 100%)',
+        boxShadow: '-3px 0 10px rgba(0,0,0,0.4)',
+        borderLeft: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: '0 2px 2px 0',
+      }}
+    >
+      {/* Top curled spool cap */}
+      <div
+        className="absolute -top-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
+        style={{
+          background: 'radial-gradient(ellipse at center, #35312c 0%, #100f0e 100%)',
+        }}
+      />
+      {/* Bottom curled spool cap */}
+      <div
+        className="absolute -bottom-1 -left-0.5 -right-0.5 h-2.5 rounded-full border border-black/50"
+        style={{
+          background: 'radial-gradient(ellipse at center, #35312c 0%, #100f0e 100%)',
+        }}
+      />
+      {/* Cylindrical gloss reflection */}
+      <div
+        className="absolute right-1 top-0 bottom-0 w-0.5 opacity-35"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0.6) 80%, transparent)',
+        }}
+      />
+    </div>
+  </div>
+);
+
 export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
   photos,
   galleryId = 'photo-carousel',
+  fadeBgColor = '#F4F3EE',
 }) => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -70,7 +245,7 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
     el.addEventListener('scroll', handleScroll, { passive: true });
 
     const step = (now: number) => {
-      const dt = Math.min((now - lastTime) / 1000, 0.1); // clamp dt in case of tab freeze
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
       if (!isPaused && !isResetting && !isLightboxOpenRef.current && el) {
@@ -268,6 +443,9 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({
       `}</style>
 
       <div ref={galleryRef} className="relative">
+        <LeftFilmEdge bgColor={fadeBgColor} />
+        <RightFilmEdge bgColor={fadeBgColor} />
+
         <div
           ref={scrollRef}
           id={galleryId}
