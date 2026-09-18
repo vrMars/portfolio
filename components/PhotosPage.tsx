@@ -54,53 +54,16 @@ function buildGalleryRows(
   const isMobile = containerWidth < 640;
   const isTablet = containerWidth < 1024;
   const targetH = isMobile ? 140 : isTablet ? 190 : 250;
+  const gap = isMobile ? 5 : 8;
+  const dateChipW = isMobile ? 55 : isTablet ? 70 : 85;
 
-  // Step 1: Pack photos into justified rows (standard algorithm)
-  const rows: PhotoWithTimestamp[][] = [];
-  let currentRow: PhotoWithTimestamp[] = [];
-  let currentW = 0;
+  // Step 1: Strictly chronological stream
+  // Each month starts with its date chip, followed by all photos of that month in exact order
+  const stream: GalleryItem[] = [];
+  let lastMonthYear = "";
 
-  photos.forEach((p) => {
-    const ar = p.width / p.height;
-    const pw = targetH * ar;
-    if (currentW + pw > containerWidth * 1.05 && currentRow.length >= 2) {
-      rows.push(currentRow);
-      currentRow = [p];
-      currentW = pw;
-    } else {
-      currentRow.push(p);
-      currentW += pw;
-    }
-  });
-  if (currentRow.length > 0) rows.push(currentRow);
-
-  // If last row has only 1 photo, merge with previous row if possible
-  if (rows.length > 1 && rows[rows.length - 1].length === 1) {
-    const single = rows.pop()![0];
-    rows[rows.length - 1].push(single);
-  }
-
-  // Step 2: Convert to GalleryRows
-  const galleryRows: GalleryRow[] = rows.map((r, rIdx) => ({
-    id: `row-${rIdx}`,
-    items: r.map((p) => ({
-      type: "photo" as const,
-      id: p.id,
-      photo: p,
-    })),
-  }));
-
-  // Step 3: Insert Date Chips
-  // Identify every unique month
-  const months: {
-    monthYear: string;
-    month: string;
-    year: string;
-    photoId: string;
-  }[] = [];
-
-  photos.forEach((p) => {
-    const d = new Date(p.timestamp);
+  photos.forEach((photo) => {
+    const d = new Date(photo.timestamp);
     const monthYear = d.toLocaleDateString("en-US", {
       month: "long",
       year: "numeric",
@@ -108,50 +71,94 @@ function buildGalleryRows(
     const month = d.toLocaleDateString("en-US", { month: "long" }).toUpperCase();
     const year = d.getFullYear().toString();
 
-    if (!months.find((m) => m.monthYear === monthYear)) {
-      months.push({ monthYear, month, year, photoId: p.id });
+    if (monthYear !== lastMonthYear) {
+      lastMonthYear = monthYear;
+      stream.push({
+        type: "date",
+        id: `date-${monthYear.replace(/\s+/g, "-")}`,
+        month,
+        year,
+      });
     }
+
+    stream.push({
+      type: "photo",
+      id: photo.id,
+      photo,
+    });
   });
 
-  // For each month, find which row contains its first photo and insert date chip
-  // Invariant: Never insert at index 0, Never insert at index length!
-  months.forEach((m) => {
-    let targetRowIndex = -1;
-    let targetPhotoPos = -1;
+  // Step 2: Pack into justified rows
+  // Constraint: Date chip CAN be in the first position, but NEVER in the last position.
+  const galleryRows: GalleryRow[] = [];
+  let currentRow: GalleryItem[] = [];
+  let currentRowW = 0;
 
-    for (let r = 0; r < galleryRows.length; r++) {
-      const pos = galleryRows[r].items.findIndex(
-        (it) => it.type === "photo" && it.photo.id === m.photoId
-      );
-      if (pos !== -1) {
-        targetRowIndex = r;
-        targetPhotoPos = pos;
-        break;
+  for (let i = 0; i < stream.length; i++) {
+    const item = stream[i];
+
+    if (item.type === "date") {
+      // If current row already has photos and is comfortably full, wrap before date
+      // so the date cleanly starts the next row (in position 0)
+      if (currentRow.length > 0 && currentRowW > containerWidth * 0.6) {
+        galleryRows.push({
+          id: `row-${galleryRows.length}`,
+          items: currentRow,
+        });
+        currentRow = [];
+        currentRowW = 0;
       }
+
+      currentRow.push(item);
+      currentRowW += (currentRow.length > 1 ? gap : 0) + dateChipW;
+
+      // CONSTRAINT: Date chip should NEVER be in the last position!
+      // Always pull in the subsequent photo into this same row
+      if (i + 1 < stream.length && stream[i + 1].type === "photo") {
+        i++;
+        const nextPhotoItem = stream[i];
+        const pw =
+          targetH *
+          (nextPhotoItem.photo.width / nextPhotoItem.photo.height);
+        currentRow.push(nextPhotoItem);
+        currentRowW += gap + pw;
+      }
+      continue;
     }
 
-    if (targetRowIndex === -1) return;
+    // Photo item
+    const ar = item.photo.width / item.photo.height;
+    const photoW = targetH * ar;
+    const newW = currentRowW + (currentRow.length > 0 ? gap : 0) + photoW;
 
-    const dateItem: GalleryItem = {
-      type: "date",
-      id: `date-${m.monthYear.replace(/\s+/g, "-")}`,
-      month: m.month,
-      year: m.year,
-    };
+    if (newW > containerWidth * 1.15 && currentRow.length >= 2) {
+      galleryRows.push({
+        id: `row-${galleryRows.length}`,
+        items: currentRow,
+      });
+      currentRow = [item];
+      currentRowW = photoW;
+      continue;
+    }
 
-    const row = galleryRows[targetRowIndex];
-    // Position within row: must be strictly > 0 and < row.items.length
-    let insertPos = 1;
-    if (targetPhotoPos === 0) {
-      insertPos = 1;
-    } else if (targetPhotoPos >= row.items.length - 1) {
-      insertPos = Math.max(1, row.items.length - 1);
+    currentRow.push(item);
+    currentRowW = newW;
+  }
+
+  if (currentRow.length > 0) {
+    if (
+      currentRow[currentRow.length - 1].type === "date" &&
+      galleryRows.length > 0
+    ) {
+      const prev = galleryRows[galleryRows.length - 1];
+      prev.items.push(...currentRow);
     } else {
-      insertPos = targetPhotoPos;
+      galleryRows.push({
+        id: `row-${galleryRows.length}`,
+        items: currentRow,
+      });
     }
-
-    row.items.splice(insertPos, 0, dateItem);
-  });
+  }
 
   return galleryRows;
 }
